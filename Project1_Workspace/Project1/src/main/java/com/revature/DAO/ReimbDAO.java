@@ -27,12 +27,13 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 		List<Reimb> allReimbs = new ArrayList<>();
 
 		try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
-
+			// use callable statement to call a get all reimbursemtns procedure in the database
 			CallableStatement cstmt = conn.prepareCall("{CALL get_all_reimbs(?)}");
 			cstmt.registerOutParameter(1, OracleTypes.CURSOR);
 			cstmt.execute();
 
 			ResultSet rs = (ResultSet) cstmt.getObject(1);
+			//map result sets is a helper method that pus the response into a list
 			allReimbs = this.mapResultSet(rs);	
 
 		} catch (SQLException e) {
@@ -48,12 +49,11 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 	{
 		try(Connection conn = ConnectionFactory.getInstance().getConnection())
 		{
+			// use a prepared statement to add a user
 			conn.setAutoCommit(false);
-//			String sql = "INSERT INTO ers_reimbursement VALUES (0,?,?,?,?,?,?,?)";
-//			String[] keys = new String[1];
-//			keys[0] = "reimb_id";
 			PreparedStatement pstmt  = conn.prepareStatement("INSERT INTO ers_reimbursement VALUES"
 					+ "(?,?,?,?,?,?,?,?)", new String[] {"reimb_id"}); 
+			// need to inserteach field of the reimbursement into pstmt
 			pstmt.setInt(1, newReimb.getReimbId());
 			pstmt.setInt(2, newReimb.getReimbAmmount());
 			pstmt.setTimestamp(3, newReimb.getSubmitted());
