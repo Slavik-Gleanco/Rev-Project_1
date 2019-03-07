@@ -36,7 +36,7 @@ CREATE TABLE ers_reimbursement_status(
 
 CREATE TABLE ers_users(
     ers_user_id         NUMBER,
-    ers_username        VARCHAR2(25),
+    ers_username        VARCHAR2(25) UNIQUE, 
     ers_password        VARCHAR2(50) NOT NULL,
     ers_first_name      VARCHAR2(25) NOT NULL,
     ers_last_name       VARCHAR2(25) NOT NULL,
@@ -54,8 +54,8 @@ DROP TABLE ers_reimbursement;
 CREATE TABLE ers_reimbursement(
     reimb_id            NUMBER,
     reimb_amount        NUMBER(20, 2),
-    reimb_submitted     VARCHAR2(3),
-    reimb_resolved      VARCHAR2(3),
+    reimb_submitted     Timestamp,
+    reimb_resolved      Timestamp,
     reimb_description   VARCHAR2(200),
     ers_user_id         NUMBER,
     reimb_status_id     NUMBER,
@@ -113,24 +113,24 @@ BEGIN
 END;
 /
 
---INSERT INTO ers_reimbursement_status
---VALUES ('Pending', 1);
---INSERT INTO ers_reimbursement_status
---VALUES ('Approved', 2);
---INSERT INTO ers_reimbursement_status
---VALUES ('Denied', 3);
---INSERT INTO ers_reimbursement_type
---VALUES ('Lodging', 1);
---INSERT INTO ers_reimbursement_type
---VALUES ('Travel', 2);
---INSERT INTO ers_reimbursement_type
---VALUES ('Food', 3);
---INSERT INTO ers_reimbursement_type
---VALUES ('Other', 4);
---INSERT INTO ers_user_roles
---VALUES (1,'employee');
---INSERT INTO ers_user_roles
---VALUES (2,'manager');
+INSERT INTO ers_reimbursement_status
+VALUES ('Pending', 1);
+INSERT INTO ers_reimbursement_status
+VALUES ('Approved', 2);
+INSERT INTO ers_reimbursement_status
+VALUES ('Denied', 3);
+INSERT INTO ers_reimbursement_type
+VALUES ('Lodging', 1);
+INSERT INTO ers_reimbursement_type
+VALUES ('Travel', 2);
+INSERT INTO ers_reimbursement_type
+VALUES ('Food', 3);
+INSERT INTO ers_reimbursement_type
+VALUES ('Other', 4);
+INSERT INTO ers_user_roles
+VALUES (1,'employee');
+INSERT INTO ers_user_roles
+VALUES (2,'manager');
 
 CREATE OR REPLACE PROCEDURE get_all_users
    (
@@ -156,7 +156,7 @@ BEGIN
    OPEN my_cursor FOR
    SELECT *
    FROM ers_reimbursement 
-   ORDER BY ers_user_id;
+   ORDER BY reimb_id;
 END;
 /
 

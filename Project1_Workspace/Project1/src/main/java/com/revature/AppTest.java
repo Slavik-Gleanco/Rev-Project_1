@@ -14,21 +14,22 @@ public class AppTest {
 	public static void main(String[] args)
 	{
 	
-	UserDAO userDao = new UserDAO();
-	UserRoles role = new UserRoles(2);
+//	UserDAO userDao = new UserDAO();
+//	UserRoles role = new UserRoles(2);
 	ReimbDAO reimbDao = new ReimbDAO();
 	ReimbStatus status = new ReimbStatus(1);
 	ReimbType type = new ReimbType(2);
-	Timestamp time = new Timestamp(0);
+	Timestamp time = new Timestamp(6);
 	
-	Reimb newReimb = new Reimb(1, 300, time, time, 1, "Testing this shiAt", status, type);
-	System.out.println(newReimb);
+	Reimb newReimb = new Reimb(1, 300, time, time, 1, "Testing", status, type);
+	//System.out.println(newReimb);
 	
 	reimbDao.add(newReimb);
 	
 	List<Reimb> allReimbs = reimbDao.getAll();
 	for(Reimb r: allReimbs)
 	{
+		//reimbDao.delete(r.get);
 		System.out.println(r);
 	}
 	

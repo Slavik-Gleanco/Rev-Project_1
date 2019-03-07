@@ -13,7 +13,7 @@ public class Reimb {
 	private String description;
 	private ReimbStatus status;
 	private ReimbType type;
-	private byte[] receipt;
+	//private byte[] receipt;
 	
 	public Reimb() {}
 
@@ -30,19 +30,19 @@ public class Reimb {
 		this.type = type;
 	}
 
-	public Reimb(int reimbId, int reimbAmmount, Timestamp submitted, Timestamp resolved, int userId, String description,
-			ReimbStatus status, ReimbType type, byte[] receipt) {
-		super();
-		this.reimbId = reimbId;
-		this.reimbAmmount = reimbAmmount;
-		this.submitted = submitted;
-		this.resolved = resolved;
-		this.userId = userId;
-		this.description = description;
-		this.status = status;
-		this.type = type;
-		this.receipt = receipt;
-	}
+//	public Reimb(int reimbId, int reimbAmmount, Timestamp submitted, Timestamp resolved, int userId, String description,
+//			ReimbStatus status, ReimbType type, byte[] receipt) {
+//		super();
+//		this.reimbId = reimbId;
+//		this.reimbAmmount = reimbAmmount;
+//		this.submitted = submitted;
+//		this.resolved = resolved;
+//		this.userId = userId;
+//		this.description = description;
+//		this.status = status;
+//		this.type = type;
+//		this.receipt = receipt;
+//	}
 
 	public int getReimbId() {
 		return reimbId;
@@ -108,20 +108,20 @@ public class Reimb {
 		this.type = type;
 	}
 
-	public byte[] getReceipt() {
-		return receipt;
-	}
-
-	public void setReceipt(byte[] receipt) {
-		this.receipt = receipt;
-	}
+//	public byte[] getReceipt() {
+//		return receipt;
+//	}
+//
+//	public void setReceipt(byte[] receipt) {
+//		this.receipt = receipt;
+//	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
-		result = prime * result + Arrays.hashCode(receipt);
+		//result = prime * result + Arrays.hashCode(receipt);
 		result = prime * result + reimbAmmount;
 		result = prime * result + reimbId;
 		result = prime * result + ((resolved == null) ? 0 : resolved.hashCode());
@@ -146,8 +146,8 @@ public class Reimb {
 				return false;
 		} else if (!description.equals(other.description))
 			return false;
-		if (!Arrays.equals(receipt, other.receipt))
-			return false;
+//		if (!Arrays.equals(receipt, other.receipt))
+//			return false;
 		if (reimbAmmount != other.reimbAmmount)
 			return false;
 		if (reimbId != other.reimbId)
@@ -181,6 +181,6 @@ public class Reimb {
 	public String toString() {
 		return "Reimb [reimbId=" + reimbId + ", reimbAmmount=" + reimbAmmount + ", submitted=" + submitted
 				+ ", resolved=" + resolved + ", userId=" + userId + ", description=" + description + ", status="
-				+ status + ", type=" + type + ", receipt=" + Arrays.toString(receipt) + "]";
+				+ status + ", type=" + type + "]";
 	}
 }

@@ -49,19 +49,20 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 		try(Connection conn = ConnectionFactory.getInstance().getConnection())
 		{
 			conn.setAutoCommit(false);
-			String sql = "INSERT INTO ers_reimbursement VALUES (0,?,?,?,?,?,?,?)";
-			String[] keys = new String[1];
-			keys[0] = "reimb_id";
-			PreparedStatement pstmt  = conn.prepareStatement(sql,keys); 
-			pstmt.setInt(1, newReimb.getReimbAmmount());
-			pstmt.setTimestamp(2, newReimb.getSubmitted());
-			pstmt.setTimestamp(3, newReimb.getResolved());
-			pstmt.setString(4, newReimb.getDescription());
-			pstmt.setInt(5, newReimb.getUserId());
-			pstmt.setInt(6, newReimb.getStatus().getStatusId());
-			pstmt.setInt(7, newReimb.getType().getTypeId());
+//			String sql = "INSERT INTO ers_reimbursement VALUES (0,?,?,?,?,?,?,?)";
+//			String[] keys = new String[1];
+//			keys[0] = "reimb_id";
+			PreparedStatement pstmt  = conn.prepareStatement("INSERT INTO ers_reimbursement VALUES"
+					+ "(?,?,?,?,?,?,?,?)", new String[] {"reimb_id"}); 
+			pstmt.setInt(1, newReimb.getReimbId());
+			pstmt.setInt(2, newReimb.getReimbAmmount());
+			pstmt.setTimestamp(3, newReimb.getSubmitted());
+			pstmt.setTimestamp(4, newReimb.getResolved());
+			pstmt.setString(5, newReimb.getDescription());
+			pstmt.setInt(6, newReimb.getUserId());
+			pstmt.setInt(7, newReimb.getStatus().getStatusId());
+			pstmt.setInt(8, newReimb.getType().getTypeId());
 			//pstmt.setInt(5, newReimb.getReceipt()
-			
 			
 			if(pstmt.executeUpdate() != 0)
 			{
@@ -94,7 +95,7 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 			conn.setAutoCommit(false);
 			
 			String sql = "UPDATE ers_reimbursement SET reimb_amount = ?, reimb_submitted = ?, reimb_resolved = ?, +"
-					+ " reimb_description = ?, reimb_status_id = ?, reimb_typed_id = ?, WHERE reimb_id = ?";
+					+ " reimb_description = ?, reimb_status_id = ?, reimb_type_id = ?, WHERE reimb_id = ?";
 			
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, updatedReimb.getReimbAmmount());
@@ -147,11 +148,11 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 			reimb.setReimbId(rs.getInt("reimb_id"));
 			reimb.setReimbAmmount(rs.getInt("reimb_amount"));
 			reimb.setSubmitted(rs.getTimestamp("reimb_submitted"));
-			reimb.setResolved(rs.getTimestamp("reimb_approved"));
+			reimb.setResolved(rs.getTimestamp("reimb_resolved"));
 			reimb.setUserId(rs.getInt("ers_user_id"));
-			reimb.setStatus(new ReimbStatus(rs.getInt("ers_status_id")));
-			reimb.setType(new ReimbType(rs.getInt("ers_type_id")));
-			reimb.setReceipt(rs.getBytes("ers_receipt"));
+			reimb.setStatus(new ReimbStatus(rs.getInt("reimb_status_id")));
+			reimb.setType(new ReimbType(rs.getInt("reimb_type_id")));
+			//reimb.setReceipt(rs.getBytes("ers_receipt"));
 			reimb.setDescription(rs.getString("reimb_description"));
 			
 			reimbsArray.add(reimb);

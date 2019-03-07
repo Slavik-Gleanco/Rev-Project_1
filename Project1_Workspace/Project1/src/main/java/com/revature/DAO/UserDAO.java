@@ -35,8 +35,6 @@ public class UserDAO implements DAO<Users> {
 			ResultSet rs = (ResultSet) cstmt.getObject(1);
 			allUsers = this.mapResultSet(rs);
 				
-			
-
 		} catch (SQLException e) {
 			System.out.println();
 			log.error("\n" + e.getMessage());
