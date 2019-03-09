@@ -42,6 +42,69 @@ public class UserDAO implements DAO<Users> {
 
 		return allUsers;
 	}
+	
+	public Users getByCredentials(String username, String password) {
+		
+		Users user = null;
+		
+		try(Connection conn = ConnectionFactory.getInstance().getConnection()) {
+			
+			PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM ers_users JOIN ers_user_roles USING (ers_role_id) WHERE ers_username = ? AND ers_password = ?");
+			pstmt.setString(1, username);
+			pstmt.setString(2, password);
+			
+			List<Users> users = this.mapResultSet(pstmt.executeQuery());
+			if (!users.isEmpty()) user = users.get(0);
+			
+		} catch (SQLException e) {
+			log.error(e.getMessage());
+		}
+				
+		return user;
+	}
+	
+	public Users getByUsername(String username) {
+		
+		Users user = null;
+		
+		try(Connection conn = ConnectionFactory.getInstance().getConnection()) {
+			
+			PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM ers_users JOIN ers_user_roles USING (ers_role_id) WHERE ers_username = ?");
+			pstmt.setString(1, username);
+			
+			List<Users> users = this.mapResultSet(pstmt.executeQuery());
+			if (!users.isEmpty()) user = users.get(0);
+			
+		} catch (SQLException e) {
+			log.error(e.getMessage());
+		}
+		
+		return user;
+	}
+	
+	public Users getById(int userId) {
+		
+		Users user = null;
+		
+		try(Connection conn = ConnectionFactory.getInstance().getConnection()) {
+			
+			PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM ers_users JOIN ers_user_roles USING (ers_role_id) WHERE ers_user_id = ?");
+			pstmt.setInt(1, userId);
+			
+			ResultSet rs = pstmt.executeQuery();
+			List<Users> users = this.mapResultSet(rs);
+			
+			if (!users.isEmpty()) {
+				user = users.get(0);
+				user.setPassword("*********");
+			}
+			
+		} catch (SQLException e) {
+			log.error(e.getMessage());
+		}
+		
+		return user;
+	}
 
 	@Override
 	public Users add(Users newUser) 
