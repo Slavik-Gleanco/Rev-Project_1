@@ -1,14 +1,11 @@
+DROP TABLE ers_reimbursement;
 DROP TABLE ers_users;
 DROP TABLE ers_user_roles;
-DROP TABLE ers_reimbursement;
 DROP TABLE ers_reimbursement_type;
 DROP TABLE ers_reimbursement_status;
 
 DROP SEQUENCE ers_users_pk_seq;
-DROP SEQUENCE ers_user_roles_pk_seq;
 DROP SEQUENCE ers_reimbursement_pk_seq;
-DROP SEQUENCE ers_type_pk_seq;
-DROP SEQUENCE ers_status_pk_seq;
 
 CREATE TABLE ers_user_roles(
     ers_role_id         NUMBER,
@@ -50,11 +47,10 @@ CREATE TABLE ers_users(
     REFERENCES ers_user_roles (ers_role_id)
 );
 
-DROP TABLE ers_reimbursement;
 CREATE TABLE ers_reimbursement(
     reimb_id            NUMBER,
     reimb_amount        NUMBER(20, 2),
-    reimb_submitted     Timestamp,
+    reimb_submitted     Timestamp DEFAULT CURRENT_TIMESTAMP,
     reimb_resolved      Timestamp,
     reimb_description   VARCHAR2(200),
     ers_user_id         NUMBER,
@@ -83,15 +79,11 @@ MAXVALUE 99999999
 INCREMENT BY 1
 START WITH 1;
 
-
-
 CREATE SEQUENCE ers_reimbursement_pk_seq
 MINVALUE 1
 MAXVALUE 99999999
 INCREMENT BY 1
 START WITH 1;
-
-
 
 CREATE OR REPLACE TRIGGER ers_users_pk_trigger
 BEFORE INSERT ON ers_users
@@ -113,6 +105,19 @@ BEGIN
 END;
 /
 
+--CREATE OR REPLACE TRIGGER ers_currentTime_reimb_trigger
+--AFTER UPDATE ON ers_reimbursement
+--FOR EACH ROW
+--BEGIN
+--    UPDATE ers_reimbursement 
+--    SET reimb_resolved = CURRENT_TIMESTAMP
+--    WHERE reimb_resolved = null;
+--END;
+--/
+
+--drop trigger ers_currentTime_reimb_trigger;
+--commit;
+
 INSERT INTO ers_reimbursement_status
 VALUES ('Pending', 1);
 INSERT INTO ers_reimbursement_status
@@ -128,9 +133,9 @@ VALUES ('Food', 3);
 INSERT INTO ers_reimbursement_type
 VALUES ('Other', 4);
 INSERT INTO ers_user_roles
-VALUES (1,'employee');
+VALUES (1,'manager');
 INSERT INTO ers_user_roles
-VALUES (2,'manager');
+VALUES (2,'employee');
 
 CREATE OR REPLACE PROCEDURE get_all_users
    (

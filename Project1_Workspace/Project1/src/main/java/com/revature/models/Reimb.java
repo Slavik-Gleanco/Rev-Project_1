@@ -6,22 +6,23 @@ import java.util.Arrays;
 public class Reimb {
 
 	private int reimbId;
-	private int reimbAmmount;
+	private int reimbAmount;
 	private Timestamp submitted;
 	private Timestamp resolved;
 	private int userId;
 	private String description;
 	private ReimbStatus status;
 	private ReimbType type;
-	//private byte[] receipt;
-	
-	public Reimb() {}
+	// private byte[] receipt;
 
-	public Reimb(int reimbId, int reimbAmmount, Timestamp submitted, Timestamp resolved, int userId, String description,
-			ReimbStatus status, ReimbType type) {
+	public Reimb() {
+	}
+
+	public Reimb(int reimbId, int reimbAmount, Timestamp submitted, Timestamp resolved, int userId, 
+			String description, ReimbStatus status, ReimbType type) {
 		super();
 		this.reimbId = reimbId;
-		this.reimbAmmount = reimbAmmount;
+		this.reimbAmount = reimbAmount;
 		this.submitted = submitted;
 		this.resolved = resolved;
 		this.userId = userId;
@@ -52,12 +53,12 @@ public class Reimb {
 		this.reimbId = reimbId;
 	}
 
-	public int getReimbAmmount() {
-		return reimbAmmount;
+	public int getReimbAmount() {
+		return reimbAmount;
 	}
 
-	public void setReimbAmmount(int reimbAmmount) {
-		this.reimbAmmount = reimbAmmount;
+	public void setReimbAmount(int reimbAmount) {
+		this.reimbAmount = reimbAmount;
 	}
 
 	public Timestamp getSubmitted() {
@@ -121,8 +122,8 @@ public class Reimb {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
-		//result = prime * result + Arrays.hashCode(receipt);
-		result = prime * result + reimbAmmount;
+		// result = prime * result + Arrays.hashCode(receipt);
+		result = prime * result + reimbAmount;
 		result = prime * result + reimbId;
 		result = prime * result + ((resolved == null) ? 0 : resolved.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
@@ -148,7 +149,7 @@ public class Reimb {
 			return false;
 //		if (!Arrays.equals(receipt, other.receipt))
 //			return false;
-		if (reimbAmmount != other.reimbAmmount)
+		if (reimbAmount != other.reimbAmount)
 			return false;
 		if (reimbId != other.reimbId)
 			return false;
@@ -179,7 +180,7 @@ public class Reimb {
 
 	@Override
 	public String toString() {
-		return "Reimb [reimbId=" + reimbId + ", reimbAmmount=" + reimbAmmount + ", submitted=" + submitted
+		return "Reimb [reimbId=" + reimbId + ", reimbAmount=" + reimbAmount + ", submitted=" + submitted
 				+ ", resolved=" + resolved + ", userId=" + userId + ", description=" + description + ", status="
 				+ status + ", type=" + type + "]";
 	}

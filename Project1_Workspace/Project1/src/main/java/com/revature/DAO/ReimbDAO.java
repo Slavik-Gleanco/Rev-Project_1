@@ -55,7 +55,7 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 					+ "(?,?,?,?,?,?,?,?)", new String[] {"reimb_id"}); 
 			// need to inserteach field of the reimbursement into pstmt
 			pstmt.setInt(1, newReimb.getReimbId());
-			pstmt.setInt(2, newReimb.getReimbAmmount());
+			pstmt.setInt(2, newReimb.getReimbAmount());
 			pstmt.setTimestamp(3, newReimb.getSubmitted());
 			pstmt.setTimestamp(4, newReimb.getResolved());
 			pstmt.setString(5, newReimb.getDescription());
@@ -94,16 +94,17 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 		{
 			conn.setAutoCommit(false);
 			
-			String sql = "UPDATE ers_reimbursement SET reimb_amount = ?, reimb_submitted = ?, reimb_resolved = ?, +"
-					+ " reimb_description = ?, reimb_status_id = ?, reimb_type_id = ?, WHERE reimb_id = ?";
+			String sql = "UPDATE ers_reimbursement SET reimb_amount = ?, reimb_submitted = ?, reimb_resolved = ?,"
+					+ "reimb_description = ?, reimb_status_id = ?, reimb_type_id = ? WHERE reimb_id = ?";
 			
 			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, updatedReimb.getReimbAmmount());
+			pstmt.setInt(1, updatedReimb.getReimbAmount());
 			pstmt.setTimestamp(2, updatedReimb.getSubmitted());
 			pstmt.setTimestamp(3, updatedReimb.getResolved());
 			pstmt.setString(4, updatedReimb.getDescription());
 			pstmt.setInt(5, updatedReimb.getStatus().getStatusId());
 			pstmt.setInt(6, updatedReimb.getType().getTypeId());
+			pstmt.setInt(7, updatedReimb.getReimbId());
 			//pstmt.setInt(5, newReimb.getReceipt()
 			
 			if(pstmt.executeUpdate() != 0) {
@@ -146,7 +147,7 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 		while(rs.next()) {	
 			Reimb reimb = new Reimb();
 			reimb.setReimbId(rs.getInt("reimb_id"));
-			reimb.setReimbAmmount(rs.getInt("reimb_amount"));
+			reimb.setReimbAmount(rs.getInt("reimb_amount"));
 			reimb.setSubmitted(rs.getTimestamp("reimb_submitted"));
 			reimb.setResolved(rs.getTimestamp("reimb_resolved"));
 			reimb.setUserId(rs.getInt("ers_user_id"));
