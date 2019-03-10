@@ -2,6 +2,7 @@ package com.revature.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,48 +13,58 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.revature.models.UserRoles;
-import com.revature.models.Users;
-import com.revature.services.UserService;
+import com.revature.models.Principal;
+import com.revature.models.Reimb;
+import com.revature.models.ReimbStatus;
+import com.revature.models.ReimbType;
+import com.revature.services.ReimbService;
 
-@WebServlet("/register/*")
-public class UserServlet_Register extends HttpServlet{
-
+@WebServlet("/request/*")
+public class ReimbServlet_Req extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static Logger log = Logger.getLogger(UserServlet_Login.class);
 	
-	private final UserService userService = new UserService();
-	
-	@Override
+	private final ReimbService reimbService = new ReimbService();
+
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("application/json");
+		Principal principal = (Principal) req.getAttribute("principal");
 		
 		String requestURI = req.getRequestURI();
 		ObjectMapper mapper = new ObjectMapper();
-		String[] userInfo = null;
-		
+		String [] reimbInfo;
 		try {
 			PrintWriter out = resp.getWriter();
 			
-			if(requestURI.equals("/Project1/register")) {
+			if(principal == null) {
+				log.warn("No principal attribute found on request");
+				resp.setStatus(401);
+				return;
+			}
+			
+			if(requestURI.equals("/Project1/request") || requestURI.equals("/Project1/request/")) {
 				
-				userInfo = mapper.readValue(req.getInputStream(), String[].class);
-				log.info(userInfo);
-				Users user = userService.addUsers(new Users(Integer.parseInt(userInfo[0]), userInfo[1], userInfo[2], userInfo[3], userInfo[4], new UserRoles(userInfo[5])));
-				String usersJSON = mapper.writeValueAsString(user);
+				reimbInfo = mapper.readValue(req.getInputStream(), String[].class);
+				log.info(reimbInfo);
+				Reimb reimb = reimbService.addReimbs(new Reimb(Integer.parseInt(reimbInfo[0]), Integer.parseInt(reimbInfo[1]),
+							new Timestamp(System.currentTimeMillis()),null ,Integer.parseInt(reimbInfo[2]), reimbInfo[3],
+							new ReimbStatus(reimbInfo[4]), new ReimbType(reimbInfo[5])));
+				String usersJSON = mapper.writeValueAsString(reimb);
 				resp.setStatus(200);
 				out.write(usersJSON);
+
 				
-			} else if (requestURI.contains("register/")) {
+			} else if (requestURI.contains("request/")) {
 				
 				String[] fragments = requestURI.split("/");
 				
 				String userId = fragments[3];
 					
-				Users user = userService.getUsersById(Integer.parseInt(userId));
+				Reimb user = reimbService.getReimbById(Integer.parseInt(userId));
 				String userJSON = mapper.writeValueAsString(user);
 				resp.setStatus(200);
-				out.write(userJSON);		
+				out.write(userJSON);
+					
 			} 
 		} catch (NumberFormatException nfe) {
 				log.error(nfe.getMessage());

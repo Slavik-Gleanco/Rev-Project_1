@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import com.revature.models.Reimb;
 import com.revature.models.ReimbStatus;
 import com.revature.models.ReimbType;
+import com.revature.models.Users;
 import com.revature.util.ConnectionFactory;
 
 import oracle.jdbc.internal.OracleTypes;
@@ -43,10 +44,34 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 
 		return allReimbs;
 	}
+	
+	public Reimb getById(int ReimbId) {
+		
+		Reimb reimb = null;
+		
+		try(Connection conn = ConnectionFactory.getInstance().getConnection()) {
+			
+			PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM ers_reimbursement WHERE reimb_id = ?");
+			pstmt.setInt(1, ReimbId);
+			
+			ResultSet rs = pstmt.executeQuery();
+			List<Reimb> reimbs = this.mapResultSet(rs);
+			
+			if (!reimbs.isEmpty()) {
+				reimb = reimbs.get(0);
+			}
+			
+		} catch (SQLException e) {
+			log.error(e.getMessage());
+		}
+		
+		return reimb;
+	}
 
 	@Override
 	public Reimb add(Reimb newReimb) 
 	{
+		
 		try(Connection conn = ConnectionFactory.getInstance().getConnection())
 		{
 			// use a prepared statement to add a user

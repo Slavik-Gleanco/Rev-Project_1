@@ -12,11 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.revature.models.Principal;
 import com.revature.models.Users;
 import com.revature.services.UserService;
 
-@WebServlet("/users/*")
+@WebServlet("/login/*")
 public class UserServlet_Login extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -27,8 +26,7 @@ public class UserServlet_Login extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("application/json");
-		Principal principal = (Principal) req.getAttribute("principal");
-		
+	
 		String requestURI = req.getRequestURI();
 		ObjectMapper mapper = new ObjectMapper();
 		String[] credentials = null;
@@ -36,13 +34,7 @@ public class UserServlet_Login extends HttpServlet {
 		try {
 			PrintWriter out = resp.getWriter();
 			
-			if(principal == null) {
-				log.warn("No principal attribute found on request");
-				resp.setStatus(401);
-				return;
-			}
-			
-			if(requestURI.equals("/Project1/users") || requestURI.equals("/Project1/users/")) {
+			if(requestURI.equals("/Project1/login") || requestURI.equals("/Project1/login/")) {
 				
 				credentials = mapper.readValue(req.getInputStream(), String[].class);
 				log.info(credentials);
@@ -51,17 +43,10 @@ public class UserServlet_Login extends HttpServlet {
 				resp.setStatus(200);
 				out.write(usersJSON);
 				
-			} else if (requestURI.contains("users/")) {
+			} else if (requestURI.contains("login/")) {
 				
 				String[] fragments = requestURI.split("/");
-				
 				String userId = fragments[3];
-					
-				if (!principal.getRole().equalsIgnoreCase("MANAGER") && !principal.getId().equalsIgnoreCase(userId)) {
-					log.warn("Unauthorized access attempt made from origin: " + req.getLocalAddr());
-					resp.setStatus(401);
-					return;
-				}
 					
 				Users user = userService.getUsersById(Integer.parseInt(userId));
 				String userJSON = mapper.writeValueAsString(user);
@@ -77,38 +62,4 @@ public class UserServlet_Login extends HttpServlet {
 			resp.setStatus(500);
 		}
 	}
-	
-//	@Override
-//	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-//		log.info("Request received by UserServlet.doPost()");
-//		Users newUser = null;
-//		
-//		
-//		ObjectMapper mapper = new ObjectMapper();
-//		
-//		try {
-//			newUser = mapper.readValue(req.getInputStream(), Users.class);
-//			//newUser = new Users();
-//		} catch (MismatchedInputException mie) {
-//			log.error(mie.getMessage());
-//			resp.setStatus(400);
-//			return;
-//		} catch (Exception e) {
-//			log.error(e.getMessage());
-//			resp.setStatus(500);
-//			return;
-//		}
-//		
-//		newUser = userService.addUsers(newUser);
-//		
-//		try {
-//			String userJson = mapper.writeValueAsString(newUser);
-//			PrintWriter out = resp.getWriter();
-//			out.write(userJson);
-//		} catch (Exception e) {
-//			log.error(e.getMessage());
-//			resp.setStatus(500);
-//		}
-//	}
-//
 }

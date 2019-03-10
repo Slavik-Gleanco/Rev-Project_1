@@ -19,7 +19,8 @@ public class AppTest {
 	ReimbStatus status = new ReimbStatus(1);
 	ReimbStatus status2 = new ReimbStatus(2);
 	ReimbType type = new ReimbType(2);
-	Timestamp time = new Timestamp(0);
+	Timestamp time = new Timestamp(System.currentTimeMillis());
+	//LocalDate date = LocalDate.now();
 	
 //	System.out.println(userDao.getByUsername("SlavG"));
 //	System.out.println();
@@ -28,12 +29,13 @@ public class AppTest {
 //	System.out.println(userDao.getByCredentials("SlavG", "hi"));
 	
 	
-	Reimb newReimb = new Reimb(1, 300, null, null, 1, "Testing", status, type);
+	Reimb newReimb = new Reimb(1, 300, time, null, 1, "Testing", status, type);
 	
-	//reimbDao.add(newReimb);
-	reimbDao.update(new Reimb(1, 350, null, null, 1, "Testing", status2, type));
+	reimbDao.add(newReimb);
+	//reimbDao.update(new Reimb(1, 350, null, null, 1, "Testing", status2, type));
 	
 	System.out.println("Operation Successful!");
+	//System.out.println(reimbDao.getById(2));
 //	
 //	List<Reimb> allReimbs = reimbDao.getAll();
 //	for(Reimb r: allReimbs)
