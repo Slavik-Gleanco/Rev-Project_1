@@ -28,6 +28,7 @@ private static Logger log = Logger.getLogger(JwtGenerator.class);
 				.setSubject(subject.getUserName())
 				.setIssuer("revature")
 				.claim("role", subject.getRole().getRoleName())
+				.claim("password", subject.getPassword())
 				.setExpiration(new Date(nowMillis + JwtConfig.EXPIRATION * 1000))
 				.signWith(signatureAlgorithm, JwtConfig.signingKey);
 		

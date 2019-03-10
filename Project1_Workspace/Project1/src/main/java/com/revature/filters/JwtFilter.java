@@ -54,6 +54,8 @@ public class JwtFilter extends HttpFilter {
 			Principal principal = new Principal();
 			principal.setId(claims.getId());
 			principal.setRole(claims.get("role", String.class));
+			principal.setPassword(claims.get("password", String.class));
+			
 			
 			// 6. Attach an attribute to the request indicating information about the principal
 			req.setAttribute("principal", principal);

@@ -44,8 +44,8 @@ public class UserServlet extends HttpServlet {
 			}
 			
 			if(requestURI.equals("/Project1/users") || requestURI.equals("/Project1/users/")) {
-				
-				if (!principal.getRole().equalsIgnoreCase("MANAGER")) {
+					System.out.println(principal.getRole().equalsIgnoreCase("MANAGER")+ " " + principal.getRole());
+				if (!principal.getRole().equalsIgnoreCase("EMPLOYEE")) {
 					log.warn("Unauthorized access attempt made from origin: " + req.getLocalAddr());
 					resp.setStatus(401);
 					return;
@@ -89,10 +89,12 @@ public class UserServlet extends HttpServlet {
 		log.info("Request received by UserServlet.doPost()");
 		Users newUser = null;
 		
+		
 		ObjectMapper mapper = new ObjectMapper();
 		
 		try {
 			newUser = mapper.readValue(req.getInputStream(), Users.class);
+			//newUser = new Users();
 		} catch (MismatchedInputException mie) {
 			log.error(mie.getMessage());
 			resp.setStatus(400);

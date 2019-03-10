@@ -49,6 +49,7 @@ public class AuthServlet extends HttpServlet {
 		}
 		
 		Users user = userService.getUsersByCredentials(credentials[0], credentials[1]);
+		System.out.println(user);
 		
 		if(user == null) {
 			resp.setStatus(401);

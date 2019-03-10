@@ -2,6 +2,7 @@ package com.revature.models;
 
 public class Principal {
 	private String id;
+	private String password;
 	private String role;
 	
 	public Principal() {
@@ -15,6 +16,14 @@ public class Principal {
 	public void setId(String id) {
 		this.id = id;
 	}
+	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
 	public String getRole() {
 		return role;
@@ -26,6 +35,6 @@ public class Principal {
 
 	@Override
 	public String toString() {
-		return "Principal [id=" + id + ", role=" + role + "]";
+		return "Principal [id=" + id + ", password=" + password + ", role=" + role + "]";
 	}
 }
