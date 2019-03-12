@@ -27,7 +27,7 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 		List<Reimb> allReimbs = new ArrayList<>();
 
 		try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
-			// use callable statement to call a get all reimbursemtns procedure in the database
+			// use callable statement to call a get all reimbursements procedure in the database
 			CallableStatement cstmt = conn.prepareCall("{CALL get_all_reimbs(?)}");
 			cstmt.registerOutParameter(1, OracleTypes.CURSOR);
 			cstmt.execute();
@@ -43,10 +43,55 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 
 		return allReimbs;
 	}
+	
+	public List<Reimb> getUsersReimbs(int id) {
+        
+        List<Reimb> allReimbs = new ArrayList<>();
+        
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+            // use callable statement to call a get all reimbursemtns procedure in the database
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM ers_reimbursement WHERE ers_user_id = ?");
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            System.out.println(rs);
+            //map result sets is a helper method that pus the response into a list
+            allReimbs = this.mapResultSet(rs);    
+
+        } catch (SQLException e) {
+            System.out.println();
+            log.error("\n" + e.getMessage());
+        }
+
+        return allReimbs;
+    }
+	
+	public Reimb getById(int ReimbId) {
+		
+		Reimb reimb = null;
+		
+		try(Connection conn = ConnectionFactory.getInstance().getConnection()) {
+			
+			PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM ers_reimbursement WHERE reimb_id = ?");
+			pstmt.setInt(1, ReimbId);
+			
+			ResultSet rs = pstmt.executeQuery();
+			List<Reimb> reimbs = this.mapResultSet(rs);
+			
+			if (!reimbs.isEmpty()) {
+				reimb = reimbs.get(0);
+			}
+			
+		} catch (SQLException e) {
+			log.error(e.getMessage());
+		}
+		
+		return reimb;
+	}
 
 	@Override
 	public Reimb add(Reimb newReimb) 
 	{
+		
 		try(Connection conn = ConnectionFactory.getInstance().getConnection())
 		{
 			// use a prepared statement to add a user
@@ -55,7 +100,7 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 					+ "(?,?,?,?,?,?,?,?)", new String[] {"reimb_id"}); 
 			// need to inserteach field of the reimbursement into pstmt
 			pstmt.setInt(1, newReimb.getReimbId());
-			pstmt.setInt(2, newReimb.getReimbAmmount());
+			pstmt.setInt(2, newReimb.getReimbAmount());
 			pstmt.setTimestamp(3, newReimb.getSubmitted());
 			pstmt.setTimestamp(4, newReimb.getResolved());
 			pstmt.setString(5, newReimb.getDescription());
@@ -94,16 +139,17 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 		{
 			conn.setAutoCommit(false);
 			
-			String sql = "UPDATE ers_reimbursement SET reimb_amount = ?, reimb_submitted = ?, reimb_resolved = ?, +"
-					+ " reimb_description = ?, reimb_status_id = ?, reimb_type_id = ?, WHERE reimb_id = ?";
+			String sql = "UPDATE ers_reimbursement SET reimb_amount = ?, reimb_submitted = ?, reimb_resolved = ?,"
+					+ "reimb_description = ?, reimb_status_id = ?, reimb_type_id = ? WHERE reimb_id = ?";
 			
 			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, updatedReimb.getReimbAmmount());
+			pstmt.setInt(1, updatedReimb.getReimbAmount());
 			pstmt.setTimestamp(2, updatedReimb.getSubmitted());
 			pstmt.setTimestamp(3, updatedReimb.getResolved());
 			pstmt.setString(4, updatedReimb.getDescription());
 			pstmt.setInt(5, updatedReimb.getStatus().getStatusId());
 			pstmt.setInt(6, updatedReimb.getType().getTypeId());
+			pstmt.setInt(7, updatedReimb.getReimbId());
 			//pstmt.setInt(5, newReimb.getReceipt()
 			
 			if(pstmt.executeUpdate() != 0) {
@@ -146,7 +192,7 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 		while(rs.next()) {	
 			Reimb reimb = new Reimb();
 			reimb.setReimbId(rs.getInt("reimb_id"));
-			reimb.setReimbAmmount(rs.getInt("reimb_amount"));
+			reimb.setReimbAmount(rs.getInt("reimb_amount"));
 			reimb.setSubmitted(rs.getTimestamp("reimb_submitted"));
 			reimb.setResolved(rs.getTimestamp("reimb_resolved"));
 			reimb.setUserId(rs.getInt("ers_user_id"));

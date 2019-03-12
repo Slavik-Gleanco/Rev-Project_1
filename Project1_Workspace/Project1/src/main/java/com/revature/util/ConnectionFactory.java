@@ -8,8 +8,13 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import oracle.jdbc.driver.OracleDriver;
+import org.apache.log4j.Logger;
+
 public class ConnectionFactory {
-private static ConnectionFactory cf = new ConnectionFactory();
+	
+	private static Logger log = Logger.getLogger(ConnectionFactory.class);
+	private static ConnectionFactory cf = new ConnectionFactory();
     
     private ConnectionFactory() {
         super();
@@ -29,23 +34,25 @@ private static ConnectionFactory cf = new ConnectionFactory();
         try {
             
             // Load the properties file (application.properties) keys/values into the Properties Object
-            prop.load(new FileReader("src/main/resources/application.properties"));
+            prop.load(new FileReader("D:\\Revature\\GitRepos\\Rev-Project_1\\Project1_Workspace\\Project1\\src\\main\\resources\\application.properties"));
+            
+            DriverManager.registerDriver(new OracleDriver());
             
             //Get a connection from the DriverManager class
             conn = DriverManager.getConnection(
                     prop.getProperty("url"),
                     prop.getProperty("usr"),
                     prop.getProperty("pw"));
-        }catch (SQLException sqle) {
-            sqle.printStackTrace();
-        } catch (FileNotFoundException fnfe) {
-            fnfe.printStackTrace();
-        } catch(IOException ioe) {
-            ioe.printStackTrace();
-        }
+            
+        } catch (SQLException sqle) {
+			log.error(sqle.getMessage());
+		} catch (FileNotFoundException fnfe) {
+			log.error(fnfe.getMessage());
+		} catch (IOException ioe) {
+			log.error(ioe.getMessage());
+		}
         
-        return conn;
-        
-    }
-    
+        if (conn == null) log.warn("Connection object is null");
+        return conn;        
+    } 
 }
