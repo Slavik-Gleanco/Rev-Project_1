@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 
 import com.revature.DAO.ReimbDAO;
 import com.revature.models.Reimb;
-import com.revature.models.Users;
 
 public class ReimbService {
 

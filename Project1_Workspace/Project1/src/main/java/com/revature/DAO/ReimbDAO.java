@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import com.revature.models.Reimb;
 import com.revature.models.ReimbStatus;
 import com.revature.models.ReimbType;
-import com.revature.models.Users;
 import com.revature.util.ConnectionFactory;
 
 import oracle.jdbc.internal.OracleTypes;
