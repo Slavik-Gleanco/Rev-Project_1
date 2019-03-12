@@ -96,14 +96,16 @@ function validatePassword(event) {
 async function register() {
     console.log('in register()');
 
-    let newUser = {
-        id: 0,
-        username: document.getElementById('register-username').value,
-        password: document.getElementById('register-password').value,
-        firstName: document.getElementById('register-fn').value,
-        lastName: document.getElementById('register-ln').value,
-        role: {}
-    };
+    let newUser = [ document.getElementById('register-username').value,
+                    document.getElementById('register-password').value,
+                    document.getElementById('register-fn').value,
+                    document.getElementById('register-ln').value
+                  ];
+        //id: 0,
+       
+        //role: {}
+    
+    console.log('newUser');
 
     let response = await fetch('register', {
         method: 'POST',
@@ -113,6 +115,7 @@ async function register() {
         },
         body: JSON.stringify(newUser)
     });
+    console.log(response);
 
     let responseBody = await response.json();
     console.log(responseBody);

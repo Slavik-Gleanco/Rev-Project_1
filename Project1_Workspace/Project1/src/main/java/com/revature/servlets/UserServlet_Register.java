@@ -39,7 +39,7 @@ public class UserServlet_Register extends HttpServlet{
 				
 				userInfo = mapper.readValue(req.getInputStream(), String[].class);
 				log.info(userInfo);
-				Users user = userService.addUsers(new Users(Integer.parseInt(userInfo[0]), userInfo[1], userInfo[2], userInfo[3], userInfo[4], new UserRoles(userInfo[5])));
+				Users user = userService.addUsers(new Users(0, userInfo[0], userInfo[1], userInfo[2], userInfo[3], new UserRoles(2)));
 				String usersJSON = mapper.writeValueAsString(user);
 				resp.setStatus(200);
 				out.write(usersJSON);
