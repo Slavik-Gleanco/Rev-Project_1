@@ -28,7 +28,7 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 		List<Reimb> allReimbs = new ArrayList<>();
 
 		try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
-			// use callable statement to call a get all reimbursemtns procedure in the database
+			// use callable statement to call a get all reimbursements procedure in the database
 			CallableStatement cstmt = conn.prepareCall("{CALL get_all_reimbs(?)}");
 			cstmt.registerOutParameter(1, OracleTypes.CURSOR);
 			cstmt.execute();
@@ -44,6 +44,27 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 
 		return allReimbs;
 	}
+	
+	public List<Reimb> getUsersReimbs(int id) {
+        
+        List<Reimb> allReimbs = new ArrayList<>();
+        
+        try (Connection conn = ConnectionFactory.getInstance().getConnection()) {
+            // use callable statement to call a get all reimbursemtns procedure in the database
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM ers_reimbursement WHERE ers_user_id = ?");
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            System.out.println(rs);
+            //map result sets is a helper method that pus the response into a list
+            allReimbs = this.mapResultSet(rs);    
+
+        } catch (SQLException e) {
+            System.out.println();
+            log.error("\n" + e.getMessage());
+        }
+
+        return allReimbs;
+    }
 	
 	public Reimb getById(int ReimbId) {
 		

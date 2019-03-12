@@ -52,8 +52,8 @@ CREATE TABLE ers_reimbursement(
     reimb_amount        NUMBER(20, 2),
     reimb_submitted     Timestamp DEFAULT CURRENT_TIMESTAMP,
     reimb_resolved      Timestamp,
-    reimb_description   VARCHAR2(200),
     ers_user_id         NUMBER,
+    reimb_description   VARCHAR2(200),
     reimb_status_id     NUMBER,
     reimb_type_id       NUMBER,
 
@@ -105,19 +105,6 @@ BEGIN
 END;
 /
 
---CREATE OR REPLACE TRIGGER ers_currentTime_reimb_trigger
---AFTER UPDATE ON ers_reimbursement
---FOR EACH ROW
---BEGIN
---    UPDATE ers_reimbursement 
---    SET reimb_resolved = CURRENT_TIMESTAMP
---    WHERE reimb_resolved = null;
---END;
---/
-
---drop trigger ers_currentTime_reimb_trigger;
---commit;
-
 INSERT INTO ers_reimbursement_status
 VALUES ('Pending', 1);
 INSERT INTO ers_reimbursement_status
@@ -167,4 +154,8 @@ END;
 
 INSERT INTO ers_users VALUES (0, 'AbeS', 'password', 'Abe', 'Schroeder', 2);
 INSERT INTO ers_users VALUES(0,'SlavG', 'hi' ,'Slavik', 'Gleanco',2);
+INSERT INTO ers_users VALUES (0, 'Manager', 'many', 'The man', 'Himself', 1);
+
+INSERT INTO ers_reimbursement VALUES(0,300,null,null, 1,'test',1,1);
+INSERT INTO ers_reimbursement VALUES(0,400,CURRENT_TIMESTAMP,null,2,'test2',2,2);
 COMMIT;

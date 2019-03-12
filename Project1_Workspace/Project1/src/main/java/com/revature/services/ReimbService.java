@@ -17,6 +17,10 @@ private static Logger log = Logger.getLogger(UserService.class);
 	public List<Reimb> getAllReimbs() {
 		return ReimbDao.getAll();
 	}
+	
+	public List<Reimb> getAllReimbsByUserId(int ReimbId) {
+		return ReimbDao.getUsersReimbs(ReimbId);
+	}
 
 	public Reimb getReimbById(int ReimbId) {
 		return ReimbDao.getById(ReimbId);
