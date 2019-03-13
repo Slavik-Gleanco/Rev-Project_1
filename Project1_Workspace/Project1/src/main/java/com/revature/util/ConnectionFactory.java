@@ -34,7 +34,7 @@ public class ConnectionFactory {
         try {
             
             // Load the properties file (application.properties) keys/values into the Properties Object
-            prop.load(new FileReader("D:\\Revature\\GitRepos\\Rev-Project_1\\Project1_Workspace\\Project1\\src\\main\\resources\\application.properties"));
+            prop.load(new FileReader("C:\\Users\\Abe\\Desktop\\repos\\Rev-Project_1\\Project1_Workspace\\Project1\\src\\main\\resources\\application.properties"));
             
             DriverManager.registerDriver(new OracleDriver());
             

@@ -49,7 +49,7 @@ public class ReimbServlet_Req extends HttpServlet {
 				log.info(reimbInfo);
 				Reimb reimb = reimbService.addReimbs(new Reimb(0, Integer.parseInt(reimbInfo[0]),
 							new Timestamp(System.currentTimeMillis()), null, Integer.parseInt(reimbInfo[1]), 
-							reimbInfo[2], new ReimbStatus(reimbInfo[3]), new ReimbType(reimbInfo[4])));
+							reimbInfo[2], new ReimbStatus("Pending"), new ReimbType(reimbInfo[3])));
 				String usersJSON = mapper.writeValueAsString(reimb);
 				resp.setStatus(200);
 				out.write(usersJSON);

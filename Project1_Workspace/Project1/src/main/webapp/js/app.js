@@ -22,24 +22,31 @@ async function loadCreateReimb() {
 
 async function createReimb() {
     console.log('in createReimb()');
+    let newReimb = [
+        document.getElementById('reimb-ampunt').value,
+        localStorage.getItem('userInfo').value,
+        document.getElementById('reimb-description').value,
+        document.getElementById('reimb-type').value
+    ];
     let response = await fetch('request', {
         method: 'PUT',
         mode: 'cors',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': localStorage.getItem('jwt')
+            'Authorization': localStorage.getItem('jwt'),
+
         },
     });
     let responseBody2 = await response.json();
     console.log(responseBody2);
-    makeReimbForm(responseBody2); 
+    // makeReimbForm(responseBody2); 
 }
 
-function makeReimbForm(responseBody2) {
-    let reimbCreateContainer = document.getElementById('submitReimbContainer');
+// function makeReimbForm(responseBody2) {
+//     let reimbCreateContainer = document.getElementById('submitReimbContainer');
 
-    let output = ``
-}
+//     let output = ``
+// }
 
 // Block of functions to load & create existing reimbursements table
 async function loadViewReimb() {
@@ -55,7 +62,8 @@ async function getReimbs() {
         mode: 'cors',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': localStorage.getItem('jwt')
+            'Authorization': localStorage.getItem('jwt'),
+            'Info': localStorage.getItem('userInfo')
         },
     });
     let responseBody = await response.json();
@@ -278,6 +286,8 @@ async function register() {
     let responseBody = await response.json();
     console.log(responseBody);
 }
+
+
 
 //-------------------------------------------------------------------------------------
 
