@@ -12,6 +12,36 @@ window.onload = function() {
         - configureLogin()
         - login()
 */
+
+// Block of functions to load & create a form for submitting new reimbursements
+async function loadCreateReimb() {
+    console.log('in loadCreateReimb()');
+    APP_VIEW.innerHTML = await fetchView('createReimb.view');
+    createReimb();
+}
+
+async function createReimb() {
+    console.log('in createReimb()');
+    let response = await fetch('request', {
+        method: 'PUT',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('jwt')
+        },
+    });
+    let responseBody2 = await response.json();
+    console.log(responseBody2);
+    makeReimbForm(responseBody2); 
+}
+
+function makeReimbForm(responseBody2) {
+    let reimbCreateContainer = document.getElementById('submitReimbContainer');
+
+    let output = ``
+}
+
+// Block of functions to load & create existing reimbursements table
 async function loadViewReimb() {
     console.log('in loadViewReimb()');
     APP_VIEW.innerHTML = await fetchView('viewReimb.view');
@@ -30,71 +60,110 @@ async function getReimbs() {
     });
     let responseBody = await response.json();
     console.log(responseBody);
-    makeTable(responseBody) 
+    makeReimbTable(responseBody); 
 }
 
-function makeTable(responseBody){   
+function makeReimbTable(responseBody){   
+    let reimbContainer = document.getElementById('reimbViewTable');
+
     if(responseBody.length>0) {
 
-    let reimbTable =  document.getElementById('tHead');
-    let headRow = document.createElement('tr');
+        let output = `<h1>Showing reimbursements for the user: <br/><br/></h1>
+                            <table class="table table-striped table-hover">
+                                <tr class="success"> 
+                                    <th class="text-center">Reimbursement Amount</th>
+                                    <th class="text-center">Date/Time Submitted</th>
+                                    <th class="text-center">Date/Time Resolved</th>
+                                    <th class="text-center">Reimbursement Description</th>
+                                    <th class="text-center">Reimbursement Status</th>
+                                    <th class="text-center">Reimbursement Type</th>
+                                </tr>`;
 
-    let amount = document .createElement('th');
-    amount.innerHTML = 'Reimbursement Amount';
-    headRow.appendChild(amount);
+            responseBody.forEach(function(res) {
+                //let time = new Date().getTime();
+                let dateSub = new Date(res.submitted);
+                let dateSubStr = dateSub.toString();
+                let dateRes = new Date(res.resolved);
+                let dateResStr = dateRes.toString();
 
-    let submitted = document .createElement('th');
-    submitted.innerHTML = 'Time Submitted';
-    headRow.appendChild(submitted);
+            output += `<tr class="text-center">
+                            <td>${res.reimbAmount}</td>
+                            <td>${dateSubStr.substring(4, 21)}</td>
+                            <td>${dateResStr.substring(4, 21)}</td>
+                            <td>${res.description}</td> 
+                            <td>${res.status.status}</td>
+                            <td>${res.type.type}</td>
+                        </tr>`
+        });
+        output += `</table>`;
+        reimbContainer.innerHTML = output;
 
-    let resolved = document .createElement('th');
-    resolved.innerHTML = 'Time Resolved';
-    headRow.appendChild(resolved);
+        // let reimbTable =  document.getElementById('tHead');
+        // let headRow = document.createElement('tr');
+        // headRow.setAttribute('id', 'headRow');
 
-    let description = document .createElement('th');
-    description.innerHTML = 'Reimbursement Description';
-    headRow.appendChild(description);
+        // let amount = document.createElement('th');
+        // amount.setAttribute('id', 'amount');
+        // document.getElementById('amount').innerText = 'Reimbursement Amount';
+        // document.getElementById('headROw').appendChild(amount);
 
-    let status = document .createElement('th');
-    status.innerHTML = 'Reimbursement Status';
-    headRow.appendChild(status);
+        // let submitted = document.createElement('th');
+        // submitted.setAttribute('id', 'submitted');
+        // document.getElementById('submitted').innerText = 'Time Submitted';
+        // document.getElementById('headROw').appendChild(submitted);
 
-    let type = document .createElement('th');
-    type.innerHTML = 'Reimbursement Type';
-    headRow.appendChild(type);
-    reimbTable.appendChild(headRow);
-    
-    for(let i=0; i < responseBody.length; i++) {
-        let newRow = document.createElement('tr');
+        // let resolved = document.createElement('th');
+        // resolved.setAttribute('id', 'resolved');
+        // document.getElementById('resolved').innerText = 'Time Resolved';
+        // document.getElementById('headROw').appendChild(resolved);
 
-        let newAmount = document .createElement('td');
-        newAmount.innerHTML = responseBody[i].reimbAmount;
-        console.log(responseBody[i].reimbAmount);
-        newRow.appendChild(newAmount);
+        // let description = document.createElement('th');
+        // description.setAttribute('id', 'description');
+        // document.getElementById('description').innerText = 'Reimbursement Description';
+        // document.getElementById('headROw').appendChild(description);
 
-        let newSubmitted = document .createElement('td');
-        newAmount.innerHTML = responseBody[i].submitted;
-        newRow.appendChild(newSubmitted);
+        // let status = document.createElement('th');
+        // status.setAttribute('id', 'status');
+        // document.getElementById('status').innerText = 'Reimbursement Status';
+        // document.getElementById('headROw').appendChild(status);
 
-        let newResolved = document .createElement('td');
-        newAmount.innerHTML = responseBody[i].resolved;
-        newRow.appendChild(newResolved);
-
-        let newDescription = document .createElement('td');
-        newAmount.innerHTML = responseBody[i].description;
-        newRow.appendChild(newDescription);
-
-        let newStatus = document .createElement('td');
-        newAmount.innerHTML = responseBody[i].status;
-        newRow.appendChild(newStatus);
-
-        let newType = document .createElement('td');
-        newAmount.innerHTML = responseBody[i].type;
-        newRow.appendChild(newType);
+        // let type = document.createElement('th');
+        // type.setAttribute('id', 'type');
+        // document.getElementById('type').innerText = 'Reimbursement Type';
+        // document.getElementById('headROw').appendChild(type);
+        // reimbTable.appendChild(headRow);
         
-        reimbTable.appendChild(newRow);
+        // for(let i=0; i < responseBody.length; i++) {
+        //     let newRow = document.createElement('tr');
+
+        //     let newAmount = document.createElement('td');
+        //     newAmount.innerHTML = responseBody[i].reimbAmount;
+        //     console.log(responseBody[i].reimbAmount);
+        //     newRow.appendChild(newAmount);
+
+        //     let newSubmitted = document.createElement('td');
+        //     newAmount.innerHTML = responseBody[i].submitted;
+        //     newRow.appendChild(newSubmitted);
+
+        //     let newResolved = document.createElement('td');
+        //     newAmount.innerHTML = responseBody[i].resolved;
+        //     newRow.appendChild(newResolved);
+
+        //     let newDescription = document.createElement('td');
+        //     newAmount.innerHTML = responseBody[i].description;
+        //     newRow.appendChild(newDescription);
+
+        //     let newStatus = document.createElement('td');
+        //     newAmount.innerHTML = responseBody[i].status;
+        //     newRow.appendChild(newStatus);
+
+        //     let newType = document.createElement('td');
+        //     newAmount.innerHTML = responseBody[i].type;
+        //     newRow.appendChild(newType);
+            
+        //     reimbTable.appendChild(newRow);
+        // }
     }
-}
 }
 
 async function loadLogin() {
@@ -222,6 +291,7 @@ async function loadDashboard() {
     APP_VIEW.innerHTML = await fetchView('dashboard.view');
     DYNAMIC_CSS_LINK.href = 'css/dashboard.css';
     document.getElementById('to-reimbs').addEventListener('click', loadViewReimb);
+    document.getElementById('to-createReimb').addEventListener('click', loadCreateReimb);
     configureDashboard();
 }
 

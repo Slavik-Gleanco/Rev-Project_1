@@ -47,9 +47,9 @@ public class ReimbServlet_Req extends HttpServlet {
 				
 				reimbInfo = mapper.readValue(req.getInputStream(), String[].class);
 				log.info(reimbInfo);
-				Reimb reimb = reimbService.addReimbs(new Reimb(Integer.parseInt(reimbInfo[0]), Integer.parseInt(reimbInfo[1]),
-							new Timestamp(System.currentTimeMillis()),null ,Integer.parseInt(reimbInfo[2]), reimbInfo[3],
-							new ReimbStatus(reimbInfo[4]), new ReimbType(reimbInfo[5])));
+				Reimb reimb = reimbService.addReimbs(new Reimb(0, Integer.parseInt(reimbInfo[0]),
+							new Timestamp(System.currentTimeMillis()), null, Integer.parseInt(reimbInfo[1]), 
+							reimbInfo[2], new ReimbStatus(reimbInfo[3]), new ReimbType(reimbInfo[4])));
 				String usersJSON = mapper.writeValueAsString(reimb);
 				resp.setStatus(200);
 				out.write(usersJSON);
