@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.revature.models.Principal;
 import com.revature.models.Users;
 import com.revature.services.UserService;
 import com.revature.util.JwtConfig;
@@ -58,5 +59,6 @@ public class AuthServlet extends HttpServlet {
 		
 		resp.setStatus(200);
 		resp.addHeader(JwtConfig.HEADER, JwtConfig.PREFIX + JwtGenerator.createJwt(user));
+		resp.addHeader("Info",Integer.toString(user.getUser_id()));
 	}
 }

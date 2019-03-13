@@ -30,7 +30,7 @@ public class ReimbServlet_Req extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("application/json");
 		Principal principal = (Principal) req.getAttribute("principal");
-		
+		System.out.println(principal);
 		String requestURI = req.getRequestURI();
 		ObjectMapper mapper = new ObjectMapper();
 		String [] reimbInfo;
@@ -81,7 +81,7 @@ public class ReimbServlet_Req extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("application/json");
 		Principal principal = (Principal) req.getAttribute("principal");
-		
+		System.out.println("Principal: " + principal);
 		String requestURI = req.getRequestURI();
 		String[] userIdArr;
 		ObjectMapper mapper = new ObjectMapper();
@@ -98,11 +98,12 @@ public class ReimbServlet_Req extends HttpServlet {
 			if(requestURI.equals("/Project1/request") || requestURI.equals("/Project1/request/")) {
 				
 				if(principal.getRole().equalsIgnoreCase("EMPLOYEE")) {
-					userIdArr = mapper.readValue(req.getInputStream(), String[].class);
+//					userIdArr = mapper.readValue(req.getInputStream(), String[].class);
 
-					List<Reimb> reimbs = reimbService.getAllReimbsByUserId(Integer.parseInt(userIdArr[0]));
+					List<Reimb> reimbs = reimbService.getAllReimbsByUserId(Integer.parseInt(principal.getId()));
 					String usersJSON = mapper.writeValueAsString(reimbs);
 					resp.setStatus(200);
+					resp.setHeader("info", usersJSON);
 					out.write(usersJSON);
 				}
 				

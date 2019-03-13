@@ -23,6 +23,10 @@ private static Logger log = Logger.getLogger(RequestViewHelper.class);
 			log.info("Fetching register.html");
 			return "partials/register.html";
 		
+		case "/Project1/viewReimb.view":
+			Log.info("Fetching viewReimb.html");
+			return "partials/viewReimb.html";
+			
 		case "/Project1/dashboard.view":
 			
 			Principal principal = (Principal) request.getAttribute("principal");
