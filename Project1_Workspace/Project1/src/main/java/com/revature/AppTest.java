@@ -32,7 +32,7 @@ public class AppTest {
 	Reimb newReimb = new Reimb(0, 300, time, null, 1, "Testing", status, type);
 	
 	reimbDao.add(newReimb);
-	//reimbDao.update(new Reimb(1, 350, null, null, 1, "Testing", status2, type));
+	reimbDao.update(new Reimb(1, 350, null, null, 1, "Testing", status2, type));
 	
 	System.out.println("Operation Successful!");
 	//System.out.println(reimbDao.getById(2));

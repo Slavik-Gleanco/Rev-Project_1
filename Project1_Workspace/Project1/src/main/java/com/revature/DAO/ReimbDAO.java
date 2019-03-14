@@ -150,6 +150,7 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 			pstmt.setInt(5, updatedReimb.getStatus().getStatusId());
 			pstmt.setInt(6, updatedReimb.getType().getTypeId());
 			pstmt.setInt(7, updatedReimb.getReimbId());
+			
 			//pstmt.setInt(5, newReimb.getReceipt()
 			
 			if(pstmt.executeUpdate() != 0) {
