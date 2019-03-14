@@ -103,8 +103,8 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 			pstmt.setInt(2, newReimb.getReimbAmount());
 			pstmt.setTimestamp(3, newReimb.getSubmitted());
 			pstmt.setTimestamp(4, newReimb.getResolved());
-			pstmt.setString(5, newReimb.getDescription());
-			pstmt.setInt(6, newReimb.getUserId());
+			pstmt.setInt(5, newReimb.getUserId());
+			pstmt.setString(6, newReimb.getDescription());
 			pstmt.setInt(7, newReimb.getStatus().getStatusId());
 			pstmt.setInt(8, newReimb.getType().getTypeId());
 			//pstmt.setInt(5, newReimb.getReceipt()

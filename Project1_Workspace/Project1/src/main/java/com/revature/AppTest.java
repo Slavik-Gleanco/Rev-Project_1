@@ -29,7 +29,7 @@ public class AppTest {
 //	System.out.println(userDao.getByCredentials("SlavG", "hi"));
 	
 	
-	Reimb newReimb = new Reimb(1, 300, time, null, 1, "Testing", status, type);
+	Reimb newReimb = new Reimb(0, 300, time, null, 1, "Testing", status, type);
 	
 	reimbDao.add(newReimb);
 	//reimbDao.update(new Reimb(1, 350, null, null, 1, "Testing", status2, type));

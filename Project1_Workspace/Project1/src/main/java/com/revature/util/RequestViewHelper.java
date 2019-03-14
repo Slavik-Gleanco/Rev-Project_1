@@ -27,6 +27,18 @@ private static Logger log = Logger.getLogger(RequestViewHelper.class);
 			Log.info("Fetching viewReimb.html");
 			return "partials/viewReimb.html";
 			
+		case "/Project1/ViewManReimb.view":
+			Log.info("Fetching ViewManReimb.html");
+			return "partials/ViewManReimb.html";
+			
+		case "/Project1/ViewAllReimb.view":
+			Log.info("Fetching ViewAllReimb.html");
+			return "partials/ViewAllReimb.html";
+			
+		case "/Project1/submitReimb.view":
+			Log.info("Fetching submitReimb.html");
+			return "partials/submitReimb.html";
+			
 		case "/Project1/dashboard.view":
 			
 			Principal principal = (Principal) request.getAttribute("principal");
@@ -38,6 +50,18 @@ private static Logger log = Logger.getLogger(RequestViewHelper.class);
 			
 			log.info("Fetching dashboard.html");
 			return "partials/dashboard.html";
+			
+		case "/Project1/managerDashboard.view":
+			
+			Principal principal2 = (Principal) request.getAttribute("principal");
+			
+			if(principal2 == null) {
+				log.warn("No principal attribute found on request object");
+				return null;
+			}
+			
+			log.info("Fetching managerDashboard.html");
+			return "partials/managerDashboard.html";
 		
 		default: 
 			log.info("Invalid view requested");

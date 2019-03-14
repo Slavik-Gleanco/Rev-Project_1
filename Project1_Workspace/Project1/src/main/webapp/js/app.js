@@ -1,8 +1,20 @@
 window.onload = function() {
+    loadLogin();
     document.getElementById('to-login').addEventListener('click', loadLogin);
     document.getElementById('to-register').addEventListener('click', loadRegister);
-    document.getElementById('to-dashboard').addEventListener('click', loadDashboard);
+    
+    if (localStorage.getItem('userRole') == 'MANAGER')
+        document.getElementById('to-dashboard').addEventListener('click', loadManDashboard);
+    else if(localStorage.getItem('userRole') == 'EMPLOYEE') 
+        document.getElementById('to-dashboard').addEventListener('click', loadDashboard);
+    else
+        loadLogin();
     document.getElementById('to-logout').addEventListener('click', logout);
+}
+
+function logout() {
+    localStorage.clear();
+    loadLogin();
 }
 
 /*
@@ -16,29 +28,37 @@ window.onload = function() {
 // Block of functions to load & create a form for submitting new reimbursements
 async function loadCreateReimb() {
     console.log('in loadCreateReimb()');
-    APP_VIEW.innerHTML = await fetchView('createReimb.view');
-    createReimb();
+    APP_VIEW.innerHTML = await fetchView('submitReimb.view');
+    configureCreateReimb();
+}
+
+function configureCreateReimb() {
+    console.log('configureCreateReimb()');
+    document.getElementById('to-submitReimb').addEventListener('click', createReimb);
 }
 
 async function createReimb() {
     console.log('in createReimb()');
     let newReimb = [
-        document.getElementById('reimb-ampunt').value,
-        localStorage.getItem('userInfo').value,
+        document.getElementById('reimb-amount').value,
+        localStorage.getItem('userId'),
         document.getElementById('reimb-description').value,
-        document.getElementById('reimb-type').value
-    ];
+        document.getElementById('reimb-type').value ];
+
+    console.log(newReimb);
+
     let response = await fetch('request', {
-        method: 'PUT',
+        method: 'POST',
         mode: 'cors',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': localStorage.getItem('jwt'),
-
         },
+        body: JSON.stringify(newReimb)
     });
     let responseBody2 = await response.json();
     console.log(responseBody2);
+    document.getElementById('reimbInfo').setAttribute('hidden', 'false');
     // makeReimbForm(responseBody2); 
 }
 
@@ -63,12 +83,32 @@ async function getReimbs() {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': localStorage.getItem('jwt'),
-            'Info': localStorage.getItem('userInfo')
+            'Info': localStorage.getItem('userId'),
+           
         },
     });
     let responseBody = await response.json();
     console.log(responseBody);
-    makeReimbTable(responseBody); 
+    if (localStorage.getItem('userRole') == 'EMPLOYEE')
+        makeReimbTable(responseBody);
+    else if (localStorage.getItem('userRole') == 'MANAGER')
+        createManReimb(responseBody);
+}
+async function getAllReimbs() {
+    console.log('in getReimbs()');
+    let response = await fetch('request', {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('jwt'),
+            'Info': localStorage.getItem('userId'),
+           
+        },
+    });
+    let responseBody = await response.json();
+    console.log(responseBody);
+    createViewAllReimb(responseBody);
 }
 
 function makeReimbTable(responseBody){   
@@ -76,15 +116,15 @@ function makeReimbTable(responseBody){
 
     if(responseBody.length>0) {
 
-        let output = `<h1>Showing reimbursements for the user: <br/><br/></h1>
+        let output = `<h1>Showing reimbursements for the user: ${localStorage.getItem('userFirst')} <br/><br/></h1>
                             <table class="table table-striped table-hover">
                                 <tr class="success"> 
                                     <th class="text-center">Reimbursement Amount</th>
                                     <th class="text-center">Date/Time Submitted</th>
                                     <th class="text-center">Date/Time Resolved</th>
                                     <th class="text-center">Reimbursement Description</th>
-                                    <th class="text-center">Reimbursement Status</th>
                                     <th class="text-center">Reimbursement Type</th>
+                                    <th class="text-center">Reimbursement Status</th>
                                 </tr>`;
 
             responseBody.forEach(function(res) {
@@ -99,78 +139,12 @@ function makeReimbTable(responseBody){
                             <td>${dateSubStr.substring(4, 21)}</td>
                             <td>${dateResStr.substring(4, 21)}</td>
                             <td>${res.description}</td> 
-                            <td>${res.status.status}</td>
                             <td>${res.type.type}</td>
+                            <td>${res.status.status}</td>
                         </tr>`
         });
         output += `</table>`;
         reimbContainer.innerHTML = output;
-
-        // let reimbTable =  document.getElementById('tHead');
-        // let headRow = document.createElement('tr');
-        // headRow.setAttribute('id', 'headRow');
-
-        // let amount = document.createElement('th');
-        // amount.setAttribute('id', 'amount');
-        // document.getElementById('amount').innerText = 'Reimbursement Amount';
-        // document.getElementById('headROw').appendChild(amount);
-
-        // let submitted = document.createElement('th');
-        // submitted.setAttribute('id', 'submitted');
-        // document.getElementById('submitted').innerText = 'Time Submitted';
-        // document.getElementById('headROw').appendChild(submitted);
-
-        // let resolved = document.createElement('th');
-        // resolved.setAttribute('id', 'resolved');
-        // document.getElementById('resolved').innerText = 'Time Resolved';
-        // document.getElementById('headROw').appendChild(resolved);
-
-        // let description = document.createElement('th');
-        // description.setAttribute('id', 'description');
-        // document.getElementById('description').innerText = 'Reimbursement Description';
-        // document.getElementById('headROw').appendChild(description);
-
-        // let status = document.createElement('th');
-        // status.setAttribute('id', 'status');
-        // document.getElementById('status').innerText = 'Reimbursement Status';
-        // document.getElementById('headROw').appendChild(status);
-
-        // let type = document.createElement('th');
-        // type.setAttribute('id', 'type');
-        // document.getElementById('type').innerText = 'Reimbursement Type';
-        // document.getElementById('headROw').appendChild(type);
-        // reimbTable.appendChild(headRow);
-        
-        // for(let i=0; i < responseBody.length; i++) {
-        //     let newRow = document.createElement('tr');
-
-        //     let newAmount = document.createElement('td');
-        //     newAmount.innerHTML = responseBody[i].reimbAmount;
-        //     console.log(responseBody[i].reimbAmount);
-        //     newRow.appendChild(newAmount);
-
-        //     let newSubmitted = document.createElement('td');
-        //     newAmount.innerHTML = responseBody[i].submitted;
-        //     newRow.appendChild(newSubmitted);
-
-        //     let newResolved = document.createElement('td');
-        //     newAmount.innerHTML = responseBody[i].resolved;
-        //     newRow.appendChild(newResolved);
-
-        //     let newDescription = document.createElement('td');
-        //     newAmount.innerHTML = responseBody[i].description;
-        //     newRow.appendChild(newDescription);
-
-        //     let newStatus = document.createElement('td');
-        //     newAmount.innerHTML = responseBody[i].status;
-        //     newRow.appendChild(newStatus);
-
-        //     let newType = document.createElement('td');
-        //     newAmount.innerHTML = responseBody[i].type;
-        //     newRow.appendChild(newType);
-            
-        //     reimbTable.appendChild(newRow);
-        // }
     }
 }
 
@@ -214,11 +188,18 @@ async function login() {
         document.getElementById('alert-msg').hidden = true;
         console.log(response.headers.get('Authorization'));
         localStorage.setItem('jwt', response.headers.get('Authorization'));
-        localStorage.setItem('userInfo', response.headers.get('Info'));
-        // document.getElementById('name').innerHTML = localStorage.getItem('userInfo');
-        console.log(localStorage.getItem('userInfo'));
+        localStorage.setItem('userId', response.headers.get('Info'));
+        localStorage.setItem('userFirst', response.headers.get('UserFirstName'));
+        localStorage.setItem('userLast', response.headers.get('UserLastName'));
+        localStorage.setItem('userName', response.headers.get('UserName'));
+        localStorage.setItem('userRole', response.headers.get('UserRole'));
+        // document.getElementById('name').innerHTML = localStorage.getItem('userId');
+        console.log(localStorage.getItem('userId'));
         
-        loadDashboard();
+        if (localStorage.getItem('userRole') == 'EMPLOYEE')
+            loadDashboard();
+        else if (localStorage.getItem('userRole') == 'MANAGER')
+            loadManDashboard();
         
     } else {
         document.getElementById('alert-msg').hidden = false;
@@ -309,6 +290,213 @@ function configureDashboard() {
     console.log('in configureDashboard()');
 }
 
+async function loadManDashboard() {
+    console.log('in loadManDashboard()');
+    APP_VIEW.innerHTML = await fetchView('managerDashboard.view');
+    DYNAMIC_CSS_LINK.href = 'css/dashboard.css';
+    document.getElementById('to-reimbsMan').addEventListener('click', loadViewManReimb);
+    document.getElementById('to-reimbsEmpMan').addEventListener('click', loadViewAllReimb);
+    document.getElementById('to-createReimb').addEventListener('click', loadCreateReimb);
+    
+}
+
+async function loadViewManReimb(){
+    console.log('in loadManReimb()');
+    APP_VIEW.innerHTML = await fetchView('ViewManReimb.view');
+    DYNAMIC_CSS_LINK.href = 'css/register.css';
+    getReimbs();
+}
+
+async function loadViewAllReimb(){
+    console.log('in loadViewAllReimb()');
+    APP_VIEW.innerHTML = await fetchView('ViewAllReimb.view');
+    DYNAMIC_CSS_LINK.href = 'css/register.css';
+    getAllReimbs();
+    document.getElementById('filter-button').addEventListener('click', filterReimbs);
+}
+
+async function filterReimbs() {
+    let response = await fetch('request', {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('jwt'),
+            'Info': localStorage.getItem('userId'),
+        },
+    });
+    let responseBody = await response.json();
+    console.log(responseBody);
+    ViewFilteredReimbs(responseBody);
+}
+
+function ViewFilteredReimbs(responseBody) {
+    let reimbContainer = document.getElementById('reimbViewTableMan');
+
+    if(responseBody.length>0) {
+
+        let output = `<h1>Showing reimbursements of all employees <br/><br/></h1>
+                            <table id = myReimbTable class="table table-striped table-hover">
+                                <tr class="success"> 
+                                    <th class="text-center">Reimbursement Amount</th>
+                                    <th class="text-center">Date/Time Submitted</th>
+                                    <th class="text-center">Date/Time Resolved</th>
+                                    <th class="text-center">Reimbursement Description</th>
+                                    <th class="text-center">Reimbursement Type</th>
+                                    <th class="text-center">Reimbursement Status</th>
+                                </tr>`;
+            let i = 0;
+            responseBody.forEach(function(res) {
+                console.log(document.getElementById('filterValue').value);
+                if(res.status.status == document.getElementById('filterValue').value) {
+
+                    if(res.userId != localStorage.getItem('userId')) {
+                        //let time = new Date().getTime();
+                        let dateSub = new Date(res.submitted);
+                        let dateSubStr = dateSub.toString();
+                        let dateRes = new Date(res.resolved);
+                        let dateResStr = dateRes.toString();
+
+                    output += `<tr id="${i}" class="text-center">
+                                    <td id="${i}amount">${res.reimbAmount}</td>
+                                    <td id="${i}submitted">${dateSubStr.substring(4, 21)}</td>
+                                    <td id="${i}resolved">${dateResStr.substring(4, 21)}</td>
+                                    <td id="${i}description">${res.description}</td> 
+                                    <td id="${i}type">${res.type.type}</td>
+                                    <td id="${i}status">
+                                        <select id="selectStatus" type="text">
+                                            <option value = ${res.status.status} selected> ${res.status.status}<option>
+                                            <option value = "Approved">Approve</option>
+                                            <option value = "Denied">Deny</option>
+                                        </select>
+                                    </td>
+                                </tr>`
+                                i++;
+                }
+                
+            }
+        });
+        output += `</table>`;
+        reimbContainer.innerHTML = output;
+    }
+    document.getElementById('update-reimbs').addEventListener('click', updateReimbs);
+}
+
+async function updateReimbs() {
+    console.log('in createReimb()');
+    let length = document.getElementById('myReimbTable').childNodes.length
+    for(i = 0; i<length; i++)
+    {
+    let currentRow = document.getElementById(`${i}`)
+    console.log(currentRow);
+    let newReimb = [
+        document.getElementById(`${i}amount`).innerHTML,
+        document.getElementById(`${i}submitted`).innerHTML,
+        localStorage.getItem('userId'),
+        document.getElementById(`${i}description`).innerHTML,
+        document.getElementById(`${i}status`).value,
+        document.getElementById(`${i}type`).innerHTML,
+        
+     ];
+
+    console.log(newReimb);
+
+     await fetch('request', {
+        method: 'PUT',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem('jwt'),
+        },
+        body: JSON.stringify(newReimb)
+    });
+    }
+    //document.getElementById('reimbInfo').setAttribute('hidden', 'false');
+    // makeReimbForm(responseBody2); 
+}
+
+function createManReimb(responseBody) {
+    let reimbContainer = document.getElementById('ManReimbTable');
+
+    if(responseBody.length>0) {
+
+        let output = `<h1>Showing reimbursements for the user: ${localStorage.getItem('userFirst')} [Manager] <br/><br/></h1>
+                            <table class="table table-striped table-hover">
+                                <tr class="success"> 
+                                    <th class="text-center">Reimbursement Amount</th>
+                                    <th class="text-center">Date/Time Submitted</th>
+                                    <th class="text-center">Date/Time Resolved</th>
+                                    <th class="text-center">Reimbursement Description</th>
+                                    <th class="text-center">Reimbursement Type</th>
+                                    <th class="text-center">Reimbursement Status</th>
+                                </tr>`;
+
+            responseBody.forEach(function(res) {
+                if(res.userId == localStorage.getItem('userId')) {
+                    //let time = new Date().getTime();
+                    let dateSub = new Date(res.submitted);
+                    let dateSubStr = dateSub.toString();
+                    let dateRes = new Date(res.resolved);
+                    let dateResStr = dateRes.toString();
+
+                output += `<tr class="text-center">
+                                <td>${res.reimbAmount}</td>
+                                <td>${dateSubStr.substring(4, 21)}</td>
+                                <td>${dateResStr.substring(4, 21)}</td>
+                                <td>${res.description}</td> 
+                                <td>${res.type.type}</td>
+                                <td>${res.status.status}</td>
+                            </tr>`
+             }
+        });
+        output += `</table>`;
+        reimbContainer.innerHTML = output;
+    }
+}
+
+function createViewAllReimb(responseBody) {
+    let reimbContainer = document.getElementById('reimbViewTableMan');
+
+    if(responseBody.length>0) {
+
+        let output = `<h1>Showing reimbursements of all employees <br/><br/></h1>
+                            <table class="table table-striped table-hover">
+                                <tr class="success"> 
+                                    <th class="text-center">Reimbursement Amount</th>
+                                    <th class="text-center">Date/Time Submitted</th>
+                                    <th class="text-center">Date/Time Resolved</th>
+                                    <th class="text-center">Reimbursement Description</th>
+                                    <th class="text-center">Reimbursement Type</th>
+                                    <th class="text-center">Reimbursement Status</th>
+                                </tr>`;
+
+            responseBody.forEach(function(res) {
+                if(res.userId != localStorage.getItem('userId')) {
+                    //let time = new Date().getTime();
+                    let dateSub = new Date(res.submitted);
+                    let dateSubStr = dateSub.toString();
+                    let dateRes = new Date(res.resolved);
+                    let dateResStr = dateRes.toString();
+
+                output += `<tr class="text-center">
+                                <td>${res.reimbAmount}</td>
+                                <td>${dateSubStr.substring(4, 21)}</td>
+                                <td>${dateResStr.substring(4, 21)}</td>
+                                <td>${res.description}</td> 
+                                <td>${res.type.type}</td>
+                                <td>${res.status.status}</td>
+                            </tr>`
+             }
+        });
+        output += `</table>`;
+        reimbContainer.innerHTML = output;
+    }
+}
+
+function configureDashboard() {
+    console.log('in configureDashboard()');
+}
+
 //-------------------------------------------------------------------------------------
 async function fetchView(uri) {
     let response = await fetch(uri, {
@@ -316,7 +504,7 @@ async function fetchView(uri) {
         mode: 'cors',
         headers: {
             'Authorization': localStorage.getItem('jwt'),
-            'Info':localStorage.getItem('userInfo')
+            'Info':localStorage.getItem('userId')
         }
     });
 

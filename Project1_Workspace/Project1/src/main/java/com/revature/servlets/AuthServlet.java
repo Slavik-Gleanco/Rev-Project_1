@@ -60,5 +60,9 @@ public class AuthServlet extends HttpServlet {
 		resp.setStatus(200);
 		resp.addHeader(JwtConfig.HEADER, JwtConfig.PREFIX + JwtGenerator.createJwt(user));
 		resp.addHeader("Info",Integer.toString(user.getUser_id()));
+		resp.addHeader("UserRole", user.getRole().getRoleName());
+		resp.addHeader("UserFirstName", user.getFirstName());
+		resp.addHeader("UserLastName", user.getLastName());
+		resp.addHeader("UserName", user.getUserName());
 	}
 }

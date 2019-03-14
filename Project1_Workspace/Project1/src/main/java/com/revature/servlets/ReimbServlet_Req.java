@@ -179,9 +179,10 @@ public class ReimbServlet_Req extends HttpServlet {
 //                    Date parsedDate = dateFormat.parse(reimbPatch[2]);
 //                    Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
                       
-                    Reimb reimb = reimbService.updateReimb(new Reimb(Integer.parseInt(reimbPatch[0]), Integer.parseInt(reimbPatch[1]),
-                            new Timestamp(Long.parseLong(reimbPatch[2])), new Timestamp(System.currentTimeMillis()),Integer.parseInt(reimbPatch[3]), reimbPatch[4],
-                            new ReimbStatus(reimbPatch[5]), new ReimbType(reimbPatch[6])));
+                    Reimb reimb = reimbService.updateReimb(new Reimb(0, Integer.parseInt(reimbPatch[0]),
+                            new Timestamp(Long.parseLong(reimbPatch[1])), new Timestamp(System.currentTimeMillis()),
+                            Integer.parseInt(reimbPatch[2]), reimbPatch[3],
+                            new ReimbStatus(reimbPatch[4]), new ReimbType(reimbPatch[5])));
                     String usersJSON = mapper.writeValueAsString(reimb);
                     resp.setStatus(200);
                     out.write(usersJSON);
