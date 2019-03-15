@@ -35,26 +35,23 @@ public class UserServlet_Register extends HttpServlet{
 		try {
 			PrintWriter out = resp.getWriter();
 			
-			if(requestURI.equals("/Project1/register")) {
+			if(requestURI.equals("/Project1/register") || requestURI.equals("/Project1/register/")) {
 				
 				userInfo = mapper.readValue(req.getInputStream(), String[].class);
 				log.info(userInfo);
 				Users user = userService.addUsers(new Users(0, userInfo[0], userInfo[1], userInfo[2], userInfo[3], new UserRoles(2)));
 				String usersJSON = mapper.writeValueAsString(user);
 				resp.setStatus(200);
+				if(userInfo[0].equals("") || userInfo[1].equals("") || userInfo[2].equals("") || userInfo[3].equals(""))
+				{
+					resp.setStatus(400);
+				}
+				else if(user == null)
+				{
+					resp.setStatus(409);
+				}
 				out.write(usersJSON);
-				
-			} else if (requestURI.contains("register/")) {
-				
-				String[] fragments = requestURI.split("/");
-				
-				String userId = fragments[3];
-					
-				Users user = userService.getUsersById(Integer.parseInt(userId));
-				String userJSON = mapper.writeValueAsString(user);
-				resp.setStatus(200);
-				out.write(userJSON);		
-			} 
+			}	
 		} catch (NumberFormatException nfe) {
 				log.error(nfe.getMessage());
 				resp.setStatus(400);

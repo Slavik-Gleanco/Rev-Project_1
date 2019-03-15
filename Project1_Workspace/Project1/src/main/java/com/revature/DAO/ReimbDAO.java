@@ -100,7 +100,7 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 					+ "(?,?,?,?,?,?,?,?)", new String[] {"reimb_id"}); 
 			// need to inserteach field of the reimbursement into pstmt
 			pstmt.setInt(1, newReimb.getReimbId());
-			pstmt.setInt(2, newReimb.getReimbAmount());
+			pstmt.setDouble(2, newReimb.getReimbAmount());
 			pstmt.setTimestamp(3, newReimb.getSubmitted());
 			pstmt.setTimestamp(4, newReimb.getResolved());
 			pstmt.setInt(5, newReimb.getUserId());
@@ -143,7 +143,7 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 					+ "reimb_description = ?, reimb_status_id = ?, reimb_type_id = ? WHERE reimb_id = ?";
 			
 			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, updatedReimb.getReimbAmount());
+			pstmt.setDouble(1, updatedReimb.getReimbAmount());
 			pstmt.setTimestamp(2, updatedReimb.getSubmitted());
 			pstmt.setTimestamp(3, updatedReimb.getResolved());
 			pstmt.setString(4, updatedReimb.getDescription());
@@ -193,7 +193,7 @@ private static Logger log = Logger.getLogger(UserDAO.class);
 		while(rs.next()) {	
 			Reimb reimb = new Reimb();
 			reimb.setReimbId(rs.getInt("reimb_id"));
-			reimb.setReimbAmount(rs.getInt("reimb_amount"));
+			reimb.setReimbAmount(rs.getDouble("reimb_amount"));
 			reimb.setSubmitted(rs.getTimestamp("reimb_submitted"));
 			reimb.setResolved(rs.getTimestamp("reimb_resolved"));
 			reimb.setUserId(rs.getInt("ers_user_id"));

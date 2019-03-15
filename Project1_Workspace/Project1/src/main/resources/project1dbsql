@@ -154,7 +154,8 @@ END;
 
 INSERT INTO ers_users VALUES (0, 'AbeS', 'password', 'Abe', 'Schroeder', 2);
 INSERT INTO ers_users VALUES(0,'SlavG', 'hi' ,'Slavik', 'Gleanco',2);
-INSERT INTO ers_users VALUES (0, 'Manager', 'many', 'The man', 'Himself', 1);
+INSERT INTO ers_users VALUES (0, 'Boss', 'pass', 'Wezley', 'Singleton', 1);
+INSERT INTO ers_users VALUES (0, 'Manager', 'many', 'Blake', 'Kruppa', 1);
 
 INSERT INTO ers_reimbursement VALUES(0,300,null,null, 1,'test',1,1);
 INSERT INTO ers_reimbursement VALUES(0,400,CURRENT_TIMESTAMP,null,2,'test2',2,2);

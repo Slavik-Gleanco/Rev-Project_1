@@ -1,14 +1,8 @@
 window.onload = function() {
     loadLogin();
-    document.getElementById('to-login').addEventListener('click', loadLogin);
     document.getElementById('to-register').addEventListener('click', loadRegister);
-    
-    if (localStorage.getItem('userRole') == 'MANAGER')
-        document.getElementById('to-dashboard').addEventListener('click', loadManDashboard);
-    else if(localStorage.getItem('userRole') == 'EMPLOYEE') 
-        document.getElementById('to-dashboard').addEventListener('click', loadDashboard);
-    else
-        loadLogin();
+    document.getElementById('to-dashboard').addEventListener('click', loadDashboard);
+    document.getElementById('toHome').addEventListener('click', loadDashboard);
     document.getElementById('to-logout').addEventListener('click', logout);
 }
 
@@ -29,11 +23,14 @@ function logout() {
 async function loadCreateReimb() {
     console.log('in loadCreateReimb()');
     APP_VIEW.innerHTML = await fetchView('submitReimb.view');
+    DYNAMIC_CSS_LINK.href = 'css/submitReimb.css';
     configureCreateReimb();
 }
 
 function configureCreateReimb() {
     console.log('configureCreateReimb()');
+    document.getElementById('emptyReimb-msg').hidden = true;
+    document.getElementById('reimbInfo').hidden = true;
     document.getElementById('to-submitReimb').addEventListener('click', createReimb);
 }
 
@@ -56,17 +53,15 @@ async function createReimb() {
         },
         body: JSON.stringify(newReimb)
     });
-    let responseBody2 = await response.json();
-    console.log(responseBody2);
-    document.getElementById('reimbInfo').setAttribute('hidden', 'false');
-    // makeReimbForm(responseBody2); 
+    if(response.status == 200) {
+        document.getElementById('emptyReimb-msg').hidden = true;
+        document.getElementById('reimbInfo').hidden = false;
+    }
+    else if( response.status == 400) {
+        document.getElementById('emptyReimb-msg').hidden = false;
+        document.getElementById('reimbInfo').hidden = true;
+    }
 }
-
-// function makeReimbForm(responseBody2) {
-//     let reimbCreateContainer = document.getElementById('submitReimbContainer');
-
-//     let output = ``
-// }
 
 // Block of functions to load & create existing reimbursements table
 async function loadViewReimb() {
@@ -119,7 +114,7 @@ function makeReimbTable(responseBody){
         let output = `<h1>Showing reimbursements for the user: ${localStorage.getItem('userFirst')} <br/><br/></h1>
                             <table class="table table-striped table-hover">
                                 <tr class="success"> 
-                                    <th class="text-center">Reimbursement Amount</th>
+                                    <th class="text-center">Reimbursement Amount ($)</th>
                                     <th class="text-center">Date/Time Submitted</th>
                                     <th class="text-center">Date/Time Resolved</th>
                                     <th class="text-center">Reimbursement Description</th>
@@ -128,35 +123,44 @@ function makeReimbTable(responseBody){
                                 </tr>`;
 
             responseBody.forEach(function(res) {
-                //let time = new Date().getTime();
-                let dateSub = new Date(res.submitted);
-                let dateSubStr = dateSub.toString();
-                let dateRes = new Date(res.resolved);
-                let dateResStr = dateRes.toString();
-
-            output += `<tr class="text-center">
-                            <td>${res.reimbAmount}</td>
-                            <td>${dateSubStr.substring(4, 21)}</td>
-                            <td>${dateResStr.substring(4, 21)}</td>
-                            <td>${res.description}</td> 
-                            <td>${res.type.type}</td>
-                            <td>${res.status.status}</td>
-                        </tr>`
+                if(res.resolved == null)
+                    {
+                        let dateResStr = "-";
+                        let dateSub = new Date(res.submitted);
+                        let dateSubStr = dateSub.toString();
+                        output += `<tr class="text-center">
+                                    <td>${res.reimbAmount}</td>
+                                    <td>${dateSubStr.substring(4, 21)}</td>
+                                    <td>${dateResStr}</td>
+                                    <td>${res.description}</td> 
+                                    <td>${res.type.type}</td>
+                                    <td>${res.status.status}</td>
+                                </tr>`
+                    }
+                    else{let dateSub = new Date(res.submitted);
+                        let dateSubStr = dateSub.toString();
+                        let dateRes = new Date(res.resolved);
+                        let dateResStr = dateRes.toString().substring(4, 21);
+    
+                        output += `<tr class="text-center">
+                                    <td>${res.reimbAmount}</td>
+                                    <td>${dateSubStr.substring(4, 21)}</td>
+                                    <td>${dateResStr}</td>
+                                    <td>${res.description}</td> 
+                                    <td>${res.type.type}</td>
+                                    <td>${res.status.status}</td>
+                                </tr>`
+                    }
         });
         output += `</table>`;
         reimbContainer.innerHTML = output;
     }
+    else
+        document.getElementById('noReimbs').hidden = false;
 }
 
 async function loadLogin() {
     console.log('in loadLogin()');
-
-    // fetchView('login.view').then(view => {
-    //     APP_VIEW.innerHTML = view;
-    //     DYNAMIC_CSS_LINK.href = 'css/login.css';
-    //     configureLogin();
-    // });
-    
     APP_VIEW.innerHTML = await fetchView('login.view');
     DYNAMIC_CSS_LINK.href = 'css/login.css';
     configureLogin();
@@ -193,21 +197,12 @@ async function login() {
         localStorage.setItem('userLast', response.headers.get('UserLastName'));
         localStorage.setItem('userName', response.headers.get('UserName'));
         localStorage.setItem('userRole', response.headers.get('UserRole'));
-        // document.getElementById('name').innerHTML = localStorage.getItem('userId');
         console.log(localStorage.getItem('userId'));
-        
-        if (localStorage.getItem('userRole') == 'EMPLOYEE')
-            loadDashboard();
-        else if (localStorage.getItem('userRole') == 'MANAGER')
-            loadManDashboard();
-        
+        loadDashboard();
     } else {
         document.getElementById('alert-msg').hidden = false;
     }
 }
-
-
-
 //-------------------------------------------------------------------------------------
 
 /*
@@ -221,6 +216,7 @@ async function login() {
 */
 
 async function loadRegister() {
+    localStorage.clear();
     console.log('in loadRegister()');
     APP_VIEW.innerHTML = await fetchView('register.view');
     DYNAMIC_CSS_LINK.href = 'css/register.css';
@@ -229,6 +225,8 @@ async function loadRegister() {
 
 function configureRegister() {
     console.log('in configureRegister()');
+    document.getElementById('emptyReg-msg').hidden = true;
+    document.getElementById('usertkn-msg').hidden = true;
     document.getElementById('register-username').addEventListener('blur', validateUsername);
     document.getElementById('register-password').addEventListener('keyup', validatePassword);
     document.getElementById('register-account').addEventListener('click', register);
@@ -266,10 +264,20 @@ async function register() {
 
     let responseBody = await response.json();
     console.log(responseBody);
+    if(response.status == 200) {
+        document.getElementById('emptyReg-msg').hidden = true;
+        document.getElementById('usertkn-msg').hidden = true;
+        loadLogin();
+    }
+    else if( response.status == 400) {
+        document.getElementById('usertkn-msg').hidden = true;
+        document.getElementById('emptyReg-msg').hidden = false;
+    }
+    else if( response.status == 409) {
+        document.getElementById('emptyReg-msg').hidden = true;
+        document.getElementById('usertkn-msg').hidden = false;
+    }
 }
-
-
-
 //-------------------------------------------------------------------------------------
 
 /*
@@ -278,12 +286,20 @@ async function register() {
  */
 
 async function loadDashboard() {
+    if(localStorage.getItem('userRole') == 'EMPLOYEE')
+    {
     console.log('in loadDashboard()');
     APP_VIEW.innerHTML = await fetchView('dashboard.view');
     DYNAMIC_CSS_LINK.href = 'css/dashboard.css';
     document.getElementById('to-reimbs').addEventListener('click', loadViewReimb);
     document.getElementById('to-createReimb').addEventListener('click', loadCreateReimb);
     configureDashboard();
+    }
+    else if(localStorage.getItem('userRole') == 'MANAGER')
+    {
+        loadManDashboard();
+    }
+    
 }
 
 function configureDashboard() {
@@ -310,7 +326,7 @@ async function loadViewManReimb(){
 async function loadViewAllReimb(){
     console.log('in loadViewAllReimb()');
     APP_VIEW.innerHTML = await fetchView('ViewAllReimb.view');
-    DYNAMIC_CSS_LINK.href = 'css/register.css';
+    DYNAMIC_CSS_LINK.href = 'css/viewAllReimb.css';
     getAllReimbs();
     document.getElementById('filter-button').addEventListener('click', filterReimbs);
 }
@@ -339,7 +355,7 @@ function ViewFilteredReimbs(responseBody) {
                             <table  class="table table-striped table-hover">
                             <tbody id="myReimbTable">
                                 <tr class="success"> 
-                                    <th class="text-center">Reimbursement Amount</th>
+                                    <th class="text-center">Reimbursement Amount ($)</th>
                                     <th class="text-center">Date/Time Submitted</th>
                                     <th class="text-center">Date/Time Resolved</th>
                                     <th class="text-center">Reimbursement Description</th>
@@ -350,33 +366,54 @@ function ViewFilteredReimbs(responseBody) {
             responseBody.forEach(function(res) {
                 console.log(document.getElementById('filterValue').value);
                 if(res.status.status == document.getElementById('filterValue').value) {
-
                     if(res.userId != localStorage.getItem('userId')) {
-                        //let time = new Date().getTime();
+                        if(res.resolved == null)
+                        {   
+                            let dateResStr = "-";
+                            let dateSub = new Date(res.submitted);
+                            let dateSubStr = dateSub.toString();
+                             output += `<tr id="${i}" class="text-center">
+                                <td id="${i}reimbId" hidden="true">${res.reimbId}</td>
+                                <td id="${i}amount">${res.reimbAmount}</td>
+                                <td>${dateSubStr.substring(4, 21)}</td>
+                                <td id="${i}resolved">${dateResStr}</td>
+                                <td id="${i}description">${res.description}</td> 
+                                <td id="${i}type">${res.type.type}</td>
+                                <td id="${i}status">
+                                    <select id="${i}selectStatus" type="text">
+                                        <option value = "${res.status.status}">${res.status.status}</option>
+                                        <option value = "Approved">Approve</option>
+                                        <option value = "Denied">Deny</option>
+                                    </select>
+                                </td>
+                                <td id="${i}submitted" hidden="true">${dateSub.getTime()}</td>
+                            </tr>`
+                            
+                        }
+                    else {
                         let dateSub = new Date(res.submitted);
                         let dateSubStr = dateSub.toString();
                         let dateRes = new Date(res.resolved);
-                        let dateResStr = dateRes.toString();
-
-                    output += `<tr id="${i}" class="text-center">
-                                    <td id="${i}reimbId" hidden="true">${res.reimbId}</td>
-                                    <td id="${i}amount">${res.reimbAmount}</td>
-                                    <td>${dateSubStr.substring(4, 21)}</td>
-                                    <td id="${i}resolved">${dateResStr.substring(4, 21)}</td>
-                                    <td id="${i}description">${res.description}</td> 
-                                    <td id="${i}type">${res.type.type}</td>
-                                    <td id="${i}status">
-                                        <select id="${i}selectStatus" type="text">
-                                            <option value = "${res.status.status}">${res.status.status}</option>
-                                            <option value = "Approved">Approve</option>
-                                            <option value = "Denied">Deny</option>
-                                        </select>
-                                    </td>
-                                    <td id="${i}submitted" hidden="true">${dateSub.getTime()}</td>
-                                </tr>`
-                                i++;
-                }
-                
+                        let dateResStr = dateRes.toString().substring(4, 21);
+                            output += `<tr id="${i}" class="text-center">
+                                            <td id="${i}reimbId" hidden="true">${res.reimbId}</td>
+                                            <td id="${i}amount">${res.reimbAmount}</td>
+                                            <td>${dateSubStr.substring(4, 21)}</td>
+                                            <td id="${i}resolved">${dateResStr}</td>
+                                            <td id="${i}description">${res.description}</td> 
+                                            <td id="${i}type">${res.type.type}</td>
+                                            <td id="${i}status">
+                                                <select id="${i}selectStatus" type="text">
+                                                    <option value = "${res.status.status}">${res.status.status}</option>
+                                                    <option value = "Approved">Approve</option>
+                                                    <option value = "Denied">Deny</option>
+                                                </select>
+                                            </td>
+                                            <td id="${i}submitted" hidden="true">${dateSub.getTime()}</td>
+                                        </tr>`
+                        }       
+                        i++;
+                }   
             }
         });
         output += `</tbody>
@@ -387,23 +424,24 @@ function ViewFilteredReimbs(responseBody) {
 }
 
 async function updateReimbs() {
+    document.getElementById('reimbUpdateInfo').hidden = true;
     console.log('in createReimb()');
     let length = document.getElementById('myReimbTable').childNodes.length
     console.log(length);
     console.log('Our table: ' + document.getElementById('myReimbTable'));
-    for(i = 1; i<length-1; i++)
-    {
-        let currentRow = document.getElementById(`${i}`)
-        console.log(currentRow);
-        let newReimb = [
-            document.getElementById(`${i-1}reimbId`).innerHTML,
-            document.getElementById(`${i-1}amount`).innerHTML,
-            document.getElementById(`${i-1}submitted`).innerHTML,
-            localStorage.getItem('userId'),
-            document.getElementById(`${i-1}description`).innerHTML,
-            document.getElementById(`${i-1}selectStatus`).value,
-            document.getElementById(`${i-1}type`).innerHTML
-        ];
+    for(i = 1; i<length-1; i++) {
+        if(document.getElementById(`${i-1}selectStatus`).value != 'Pending'){
+            let currentRow = document.getElementById(`${i}`)
+            console.log(currentRow);
+            let newReimb = [
+                document.getElementById(`${i-1}reimbId`).innerHTML,
+                document.getElementById(`${i-1}amount`).innerHTML,
+                document.getElementById(`${i-1}submitted`).innerHTML,
+                localStorage.getItem('userId'),
+                document.getElementById(`${i-1}description`).innerHTML,
+                document.getElementById(`${i-1}selectStatus`).value,
+                document.getElementById(`${i-1}type`).innerHTML
+            ];
 
         console.log(newReimb);
 
@@ -418,9 +456,9 @@ async function updateReimbs() {
         });
         let responseBody = await response.json();
         console.log(responseBody);
+        document.getElementById('reimbUpdateInfo').hidden = false;
+        }   
     }
-    //document.getElementById('reimbInfo').setAttribute('hidden', 'false');
-    // makeReimbForm(responseBody2); 
 }
 
 function createManReimb(responseBody) {
@@ -431,7 +469,7 @@ function createManReimb(responseBody) {
         let output = `<h1>Showing reimbursements for the user: ${localStorage.getItem('userFirst')} [Manager] <br/><br/></h1>
                             <table class="table table-striped table-hover">
                                 <tr class="success"> 
-                                    <th class="text-center">Reimbursement Amount</th>
+                                    <th class="text-center">Reimbursement Amount ($)</th>
                                     <th class="text-center">Date/Time Submitted</th>
                                     <th class="text-center">Date/Time Resolved</th>
                                     <th class="text-center">Reimbursement Description</th>
@@ -441,20 +479,34 @@ function createManReimb(responseBody) {
 
             responseBody.forEach(function(res) {
                 if(res.userId == localStorage.getItem('userId')) {
-                    //let time = new Date().getTime();
-                    let dateSub = new Date(res.submitted);
-                    let dateSubStr = dateSub.toString();
-                    let dateRes = new Date(res.resolved);
-                    let dateResStr = dateRes.toString();
-
-                output += `<tr class="text-center">
-                                <td>${res.reimbAmount}</td>
-                                <td>${dateSubStr.substring(4, 21)}</td>
-                                <td>${dateResStr.substring(4, 21)}</td>
-                                <td>${res.description}</td> 
-                                <td>${res.type.type}</td>
-                                <td>${res.status.status}</td>
-                            </tr>`
+                    if(res.resolved == null)
+                    {
+                        let dateResStr = "-";
+                        let dateSub = new Date(res.submitted);
+                        let dateSubStr = dateSub.toString();
+                        output += `<tr class="text-center">
+                                    <td>${res.reimbAmount}</td>
+                                    <td>${dateSubStr.substring(4, 21)}</td>
+                                    <td>${dateResStr}</td>
+                                    <td>${res.description}</td> 
+                                    <td>${res.type.type}</td>
+                                    <td>${res.status.status}</td>
+                                </tr>`
+                    }
+                    else{let dateSub = new Date(res.submitted);
+                        let dateSubStr = dateSub.toString();
+                        let dateRes = new Date(res.resolved);
+                        let dateResStr = dateRes.toString().substring(4, 21);
+    
+                        output += `<tr class="text-center">
+                                    <td>${res.reimbAmount}</td>
+                                    <td>${dateSubStr.substring(4, 21)}</td>
+                                    <td>${dateResStr}</td>
+                                    <td>${res.description}</td> 
+                                    <td>${res.type.type}</td>
+                                    <td>${res.status.status}</td>
+                                </tr>`
+                    }
              }
         });
         output += `</table>`;
@@ -470,7 +522,7 @@ function createViewAllReimb(responseBody) {
         let output = `<h1>Showing reimbursements of all employees <br/><br/></h1>
                             <table class="table table-striped table-hover">
                                 <tr class="success"> 
-                                    <th class="text-center">Reimbursement Amount</th>
+                                    <th class="text-center">Reimbursement Amount ($)</th>
                                     <th class="text-center">Date/Time Submitted</th>
                                     <th class="text-center">Date/Time Resolved</th>
                                     <th class="text-center">Reimbursement Description</th>
@@ -480,20 +532,35 @@ function createViewAllReimb(responseBody) {
 
             responseBody.forEach(function(res) {
                 if(res.userId != localStorage.getItem('userId')) {
-                    //let time = new Date().getTime();
+                    console.log(res.resolved);
+                if(res.resolved == null)
+                {
+                    let dateResStr = "-";
                     let dateSub = new Date(res.submitted);
                     let dateSubStr = dateSub.toString();
-                    let dateRes = new Date(res.resolved);
-                    let dateResStr = dateRes.toString();
-
-                output += `<tr class="text-center">
+                    output += `<tr class="text-center">
                                 <td>${res.reimbAmount}</td>
                                 <td>${dateSubStr.substring(4, 21)}</td>
-                                <td>${dateResStr.substring(4, 21)}</td>
+                                <td>${dateResStr}</td>
                                 <td>${res.description}</td> 
                                 <td>${res.type.type}</td>
                                 <td>${res.status.status}</td>
                             </tr>`
+                }
+                else{let dateSub = new Date(res.submitted);
+                    let dateSubStr = dateSub.toString();
+                    let dateRes = new Date(res.resolved);
+                    let dateResStr = dateRes.toString().substring(4, 21);
+
+                    output += `<tr class="text-center">
+                                <td>${res.reimbAmount}</td>
+                                <td>${dateSubStr.substring(4, 21)}</td>
+                                <td>${dateResStr}</td>
+                                <td>${res.description}</td> 
+                                <td>${res.type.type}</td>
+                                <td>${res.status.status}</td>
+                            </tr>`
+                }              
              }
         });
         output += `</table>`;

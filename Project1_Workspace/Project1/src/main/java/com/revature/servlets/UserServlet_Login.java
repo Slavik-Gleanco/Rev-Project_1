@@ -42,17 +42,7 @@ public class UserServlet_Login extends HttpServlet {
 				String usersJSON = mapper.writeValueAsString(user);
 				resp.setStatus(200);
 				out.write(usersJSON);
-				
-			} else if (requestURI.contains("login/")) {
-				
-				String[] fragments = requestURI.split("/");
-				String userId = fragments[3];
-					
-				Users user = userService.getUsersById(Integer.parseInt(userId));
-				String userJSON = mapper.writeValueAsString(user);
-				resp.setStatus(200);
-				out.write(userJSON);		
-			} 
+			}	 
 		} catch (NumberFormatException nfe) {
 				log.error(nfe.getMessage());
 				resp.setStatus(400);

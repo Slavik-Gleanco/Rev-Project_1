@@ -47,26 +47,17 @@ public class ReimbServlet_Req extends HttpServlet {
 				
 				reimbInfo = mapper.readValue(req.getInputStream(), String[].class);
 				log.info(reimbInfo);
-				Reimb reimb = reimbService.addReimbs(new Reimb(0, Integer.parseInt(reimbInfo[0]),
+				Reimb reimb = reimbService.addReimbs(new Reimb(0, Double.parseDouble(reimbInfo[0]),
 							new Timestamp(System.currentTimeMillis()), null, Integer.parseInt(reimbInfo[1]), 
 							reimbInfo[2], new ReimbStatus("Pending"), new ReimbType(reimbInfo[3])));
 				String usersJSON = mapper.writeValueAsString(reimb);
 				resp.setStatus(200);
+				if(reimbInfo[0].equals("") || reimbInfo[2].equals(""))
+				{
+					resp.setStatus(400);
+				}
 				out.write(usersJSON);
-
-				
-			} else if (requestURI.contains("request/")) {
-				
-				String[] fragments = requestURI.split("/");
-				
-				String userId = fragments[3];
-					
-				Reimb user = reimbService.getReimbById(Integer.parseInt(userId));
-				String userJSON = mapper.writeValueAsString(user);
-				resp.setStatus(200);
-				out.write(userJSON);
-					
-			} 
+			}						
 		} catch (NumberFormatException nfe) {
 				log.error(nfe.getMessage());
 				resp.setStatus(400);
@@ -113,29 +104,7 @@ public class ReimbServlet_Req extends HttpServlet {
 					resp.setStatus(200);
 					out.write(usersJSON);
 				}
-				
-//				log.warn("Unauthorized access attempt made from origin: " + req.getLocalAddr());
-//				resp.setStatus(401);
-//				return;
-				
-			} else if (requestURI.contains("request/")) {
-				
-				String[] fragments = requestURI.split("/");
-				
-				String reimbId = fragments[3];
-					
-				if (!principal.getRole().equalsIgnoreCase("MANAGER") && !principal.getId().equalsIgnoreCase(reimbId)) {
-					log.warn("Unauthorized access attempt made from origin: " + req.getLocalAddr());
-					resp.setStatus(401);
-					return;
-				}
-					
-				Reimb reimb = reimbService.getReimbById(Integer.parseInt(reimbId));
-				String userJSON = mapper.writeValueAsString(reimb);
-				resp.setStatus(200);
-				out.write(userJSON);
-					
-			} 
+			}
 		} catch (NumberFormatException nfe) {
 				log.error(nfe.getMessage());
 				resp.setStatus(400);
@@ -175,32 +144,14 @@ public class ReimbServlet_Req extends HttpServlet {
                     reimbPatch = mapper.readValue(req.getInputStream(), String[].class);
                     log.info(reimbPatch);
                       
-                    Reimb reimb = reimbService.updateReimb(new Reimb(Integer.parseInt(reimbPatch[0]), Integer.parseInt(reimbPatch[1]),
+                    Reimb reimb = reimbService.updateReimb(new Reimb(Integer.parseInt(reimbPatch[0]), Double.parseDouble(reimbPatch[1]),
                             new Timestamp(Long.parseLong(reimbPatch[2])), new Timestamp(System.currentTimeMillis()),
                             Integer.parseInt(reimbPatch[3]), reimbPatch[4],
                             new ReimbStatus(reimbPatch[5]), new ReimbType(reimbPatch[6])));
                     String usersJSON = mapper.writeValueAsString(reimb);
                     resp.setStatus(200);
                     out.write(usersJSON);
-				
-			} else if (requestURI.contains("request/")) {
-				
-				String[] fragments = requestURI.split("/");
-				
-				String reimbId = fragments[3];
-					
-				if (!principal.getRole().equalsIgnoreCase("MANAGER") && !principal.getId().equalsIgnoreCase(reimbId)) {
-					log.warn("Unauthorized access attempt made from origin: " + req.getLocalAddr());
-					resp.setStatus(401);
-					return;
 				}
-					
-				Reimb reimb = reimbService.getReimbById(Integer.parseInt(reimbId));
-				String userJSON = mapper.writeValueAsString(reimb);
-				resp.setStatus(200);
-				out.write(userJSON);
-					
-			} 
 		} catch (NumberFormatException nfe) {
 				log.error(nfe.getMessage());
 				resp.setStatus(400);

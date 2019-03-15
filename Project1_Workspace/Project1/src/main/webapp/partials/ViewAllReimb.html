@@ -1,14 +1,18 @@
 <div id="reimbViewTableMan"></div>
 <br/>
 <div id="filter-menu">
-    <p>
-        <select id="filterValue" type="text">
+    
+        <select class="form-control" id="filterValue" type="text">
             <option value="">Filter by:</option>
             <option value="Pending">Pending</option>
             <option value="Approved">Approved</option>
             <option value="Denied">Denied</option>
         </select>
-        <button id="filter-button">Filter</button>
-        <button id="update-reimbs">Update Reimbursements</button>
-    </p>
+        <button class="btn btn-lg btn-warning btn-block" id="filter-button">Filter</button>
+        <button class="btn btn-lg btn-primary btn-block" id="update-reimbs">Update Reimbursements</button>
+
+        <div id="reimbUpdateInfo" class="alert alert-success text-center" role="alert">
+                Reimbursement have been updated!
+                </div>
 </div>
+<p class="mt-5 mb-3 text-muted">&copy; Revature 2017-2019</p>

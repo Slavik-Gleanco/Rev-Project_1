@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 public class Reimb {
 
 	private int reimbId;
-	private int reimbAmount;
+	private double reimbAmount;
 	private Timestamp submitted;
 	private Timestamp resolved;
 	private int userId;
@@ -17,7 +17,7 @@ public class Reimb {
 	public Reimb() {
 	}
 
-	public Reimb(int reimbId, int reimbAmount, Timestamp submitted, Timestamp resolved, int userId, 
+	public Reimb(int reimbId, double reimbAmount, Timestamp submitted, Timestamp resolved, int userId, 
 			String description, ReimbStatus status, ReimbType type) {
 		super();
 		this.reimbId = reimbId;
@@ -30,20 +30,6 @@ public class Reimb {
 		this.type = type;
 	}
 
-//	public Reimb(int reimbId, int reimbAmmount, Timestamp submitted, Timestamp resolved, int userId, String description,
-//			ReimbStatus status, ReimbType type, byte[] receipt) {
-//		super();
-//		this.reimbId = reimbId;
-//		this.reimbAmmount = reimbAmmount;
-//		this.submitted = submitted;
-//		this.resolved = resolved;
-//		this.userId = userId;
-//		this.description = description;
-//		this.status = status;
-//		this.type = type;
-//		this.receipt = receipt;
-//	}
-
 	public int getReimbId() {
 		return reimbId;
 	}
@@ -52,11 +38,11 @@ public class Reimb {
 		this.reimbId = reimbId;
 	}
 
-	public int getReimbAmount() {
+	public double getReimbAmount() {
 		return reimbAmount;
 	}
 
-	public void setReimbAmount(int reimbAmount) {
+	public void setReimbAmount(double reimbAmount) {
 		this.reimbAmount = reimbAmount;
 	}
 
@@ -121,8 +107,9 @@ public class Reimb {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
-		// result = prime * result + Arrays.hashCode(receipt);
-		result = prime * result + reimbAmount;
+		long temp;
+		temp = Double.doubleToLongBits(reimbAmount);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + reimbId;
 		result = prime * result + ((resolved == null) ? 0 : resolved.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
@@ -146,9 +133,7 @@ public class Reimb {
 				return false;
 		} else if (!description.equals(other.description))
 			return false;
-//		if (!Arrays.equals(receipt, other.receipt))
-//			return false;
-		if (reimbAmount != other.reimbAmount)
+		if (Double.doubleToLongBits(reimbAmount) != Double.doubleToLongBits(other.reimbAmount))
 			return false;
 		if (reimbId != other.reimbId)
 			return false;
