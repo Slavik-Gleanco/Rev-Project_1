@@ -329,6 +329,7 @@ async function loadViewAllReimb(){
     DYNAMIC_CSS_LINK.href = 'css/viewAllReimb.css';
     getAllReimbs();
     document.getElementById('filter-button').addEventListener('click', filterReimbs);
+    document.getElementById('reimbUpdateInfo').hidden = true;
 }
 
 async function filterReimbs() {
@@ -347,6 +348,7 @@ async function filterReimbs() {
 }
 
 function ViewFilteredReimbs(responseBody) {
+    document.getElementById('reimbUpdateInfo').hidden = true;
     let reimbContainer = document.getElementById('reimbViewTableMan');
 
     if(responseBody.length>0) {
@@ -424,7 +426,6 @@ function ViewFilteredReimbs(responseBody) {
 }
 
 async function updateReimbs() {
-    document.getElementById('reimbUpdateInfo').hidden = true;
     console.log('in createReimb()');
     let length = document.getElementById('myReimbTable').childNodes.length
     console.log(length);
